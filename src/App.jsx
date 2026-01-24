@@ -12,7 +12,8 @@ import "react-toastify/dist/ReactToastify.css";
 import "./index.css";
 
 const App = () => {
-  const url = "http://localhost:4000";
+  // const url = "http://localhost:4000";
+  const url = import.meta.env.VITE_ADMIN_API;
 
   return (
     <BrowserRouter>

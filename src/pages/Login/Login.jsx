@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { Lock, Mail, Eye, EyeOff, LogIn, AlertCircle } from "lucide-react";
-import logo from "../../assets/logo.png";
 
 const Login = () => {
   const [credentials, setCredentials] = useState({
@@ -41,7 +40,7 @@ const Login = () => {
           <div className="flex items-center gap-4 mb-8">
             <div className="w-14 h-14 bg-white rounded-xl flex items-center justify-center shadow-lg">
               <img
-                src={logo}
+                src="/logo.png"
                 alt="Spice Drama"
                 className="w-12 h-12 rounded-lg object-cover"
               />

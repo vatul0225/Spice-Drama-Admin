@@ -13,7 +13,7 @@ import "./index.css";
 
 const App = () => {
   // const url = "http://localhost:4000";
-  const url = import.meta.env.VITE_ADMIN_API;
+  const url = import.meta.env.VITE_USER_API;
 
   return (
     <BrowserRouter>

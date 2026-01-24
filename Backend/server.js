@@ -3,38 +3,47 @@ import cors from "cors";
 import { connectDB } from "./config/db.js";
 import foodRouter from "./routes/foodRoutes.js";
 import userRouter from "./routes/userRoute.js";
-import "dotenv/config";
 import cartRouter from "./routes/cartRoute.js";
 import orderRouter from "./routes/orderRoute.js";
+import "dotenv/config";
 
-// app config
 const app = express();
-// const port = 4000;
-const PORT = process.env.PORT || 4000; // port for live host on render
+const PORT = process.env.PORT || 4000;
 
-// middleware
+/* ---------------- CORS CONFIG (IMPORTANT) ---------------- */
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "https://spice-drama-admin.vercel.app",
+      "https://spice-drama.vercel.app",
+    ],
+    credentials: true,
+  }),
+);
+
+/* ---------------- MIDDLEWARE ---------------- */
 app.use(express.json());
-app.use(cors());
+app.use(express.urlencoded({ extended: true }));
 
-// Db Connection
+/* ---------------- DB CONNECTION ---------------- */
 connectDB();
 
-// api endpoint
-app.use("/api/food", foodRouter);
+/* ---------------- STATIC FILES ---------------- */
 app.use("/images", express.static("uploads"));
+
+/* ---------------- ROUTES ---------------- */
+app.use("/api/food", foodRouter);
 app.use("/api/user", userRouter);
 app.use("/api/cart", cartRouter);
 app.use("/api/order", orderRouter);
 
+/* ---------------- HEALTH CHECK ---------------- */
 app.get("/", (req, res) => {
-  res.send("API Working");
+  res.send("API Working 🚀");
 });
 
-// app.listen(port, () => {
-//   console.log(`Server started on http://localhost:${port}`);
-// });
-
-// for render live host
+/* ---------------- SERVER ---------------- */
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

@@ -1,50 +1,61 @@
 import React, { useEffect, useState } from "react";
 import { Edit, Trash2, Eye, PlusCircle, Search, X } from "lucide-react";
-import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import userApi from "../../services/userApi";
 
-export default function List({ url }) {
+export default function List() {
   const [list, setList] = useState([]);
   const [search, setSearch] = useState("");
   const [viewItem, setViewItem] = useState(null);
 
   const navigate = useNavigate();
 
+  /* ---------------- FETCH LIST ---------------- */
   const fetchList = async () => {
     try {
-      const response = await axios.get(`${url}/api/food/list`);
+      const response = await userApi.get("/food/list");
       if (response.data.success) {
         setList(response.data.data);
       }
-    } catch {
+    } catch (error) {
+      console.error(error);
       toast.error("Server error");
     }
   };
 
+  /* ---------------- REMOVE ITEM ---------------- */
   const remove = async (foodId) => {
-    const response = await axios.post(`${url}/api/food/remove`, {
-      id: foodId,
-    });
-    await fetchList();
-    response.data.success
-      ? toast.success(response.data.message)
-      : toast.error("Error Occurred");
+    try {
+      const response = await userApi.post("/food/remove", {
+        id: foodId,
+      });
+
+      if (response.data.success) {
+        toast.success(response.data.message);
+        fetchList();
+      } else {
+        toast.error("Error occurred");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to remove item");
+    }
   };
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchList();
   }, []);
 
+  /* ---------------- SEARCH FILTER ---------------- */
   const filteredItems = list.filter((item) =>
     item.name.toLowerCase().includes(search.toLowerCase()),
   );
 
   return (
     <div className="space-y-5 px-3 sm:px-5">
-      {/* Header  */}
+      {/* Header */}
       <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
         <h1 className="text-xl sm:text-2xl font-bold">Menu Items</h1>
         <button
@@ -55,7 +66,7 @@ export default function List({ url }) {
         </button>
       </div>
 
-      {/* Search  */}
+      {/* Search */}
       <div className="relative w-full sm:max-w-sm">
         <Search className="absolute left-3 top-3 text-gray-400" size={16} />
         <input
@@ -66,7 +77,7 @@ export default function List({ url }) {
         />
       </div>
 
-      {/* Mobile Cards  */}
+      {/* Mobile Cards */}
       <div className="grid gap-4 md:hidden">
         {filteredItems.map((item) => (
           <div
@@ -74,7 +85,7 @@ export default function List({ url }) {
             className="bg-white rounded-xl shadow-sm border p-4 flex gap-4"
           >
             <img
-              src={`${url}/images/${item.image}`}
+              src={`${import.meta.env.VITE_USER_API}/images/${item.image}`}
               alt={item.name}
               className="w-20 h-20 rounded-lg object-cover flex-shrink-0"
             />
@@ -106,7 +117,7 @@ export default function List({ url }) {
         ))}
       </div>
 
-      {/* Desktop table  */}
+      {/* Desktop Table */}
       <div className="hidden md:block bg-white rounded-lg shadow overflow-x-auto">
         <table className="w-full text-sm">
           <thead className="bg-gray-50">
@@ -122,7 +133,7 @@ export default function List({ url }) {
               <tr key={item._id} className="border-t">
                 <td className="px-4 py-3 flex items-center gap-3">
                   <img
-                    src={`${url}/images/${item.image}`}
+                    src={`${import.meta.env.VITE_USER_API}/images/${item.image}`}
                     className="w-12 h-12 rounded object-cover"
                   />
                   {item.name}
@@ -154,7 +165,7 @@ export default function List({ url }) {
         </table>
       </div>
 
-      {/* Pop up  */}
+      {/* Popup View */}
       <AnimatePresence>
         {viewItem && (
           <motion.div
@@ -179,7 +190,7 @@ export default function List({ url }) {
               </button>
 
               <img
-                src={`${url}/images/${viewItem.image}`}
+                src={`${import.meta.env.VITE_USER_API}/images/${viewItem.image}`}
                 className="w-full h-52 object-cover rounded-t-lg"
               />
 

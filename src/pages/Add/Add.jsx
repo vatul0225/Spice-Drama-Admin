@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Upload } from "lucide-react";
-import axios from "axios";
 import { toast } from "react-toastify";
 import { useParams, useNavigate } from "react-router-dom";
+import userApi from "../../services/userApi";
 
-export default function AddItems({ url }) {
-  const { id } = useParams(); // edit mode check
+export default function AddItems() {
+  const { id } = useParams();
   const navigate = useNavigate();
 
   // image upload
@@ -20,12 +20,12 @@ export default function AddItems({ url }) {
     price: "",
   });
 
-  // FETCH DATA IN EDIT MODE
+  /* ---------------- FETCH DATA (EDIT MODE) ---------------- */
   useEffect(() => {
     if (id) {
       const fetchItem = async () => {
         try {
-          const res = await axios.get(`${url}/api/food/single/${id}`);
+          const res = await userApi.get(`/food/single/${id}`);
           if (res.data.success) {
             setData({
               name: res.data.data.name,
@@ -41,17 +41,17 @@ export default function AddItems({ url }) {
       };
       fetchItem();
     }
-  }, [id, url]);
+  }, [id]);
 
-  // INPUT CHANGE HANDLER
-  const onChangeHandler = (event) => {
-    const { name, value } = event.target;
+  /* ---------------- INPUT HANDLER ---------------- */
+  const onChangeHandler = (e) => {
+    const { name, value } = e.target;
     setData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // SUBMIT HANDLER (ADD / UPDATE)
-  const onSubmitHandler = async (event) => {
-    event.preventDefault();
+  /* ---------------- SUBMIT HANDLER ---------------- */
+  const onSubmitHandler = async (e) => {
+    e.preventDefault();
 
     try {
       const formData = new FormData();
@@ -60,7 +60,6 @@ export default function AddItems({ url }) {
       formData.append("price", Number(data.price));
       formData.append("category", data.category);
 
-      // append image ONLY ONCE
       if (image) {
         formData.append("image", image);
       }
@@ -68,11 +67,11 @@ export default function AddItems({ url }) {
       let response;
 
       if (id) {
-        // UPDATE MODE
-        response = await axios.put(`${url}/api/food/update/${id}`, formData);
+        // UPDATE ITEM
+        response = await userApi.put(`/food/update/${id}`, formData);
       } else {
-        // ADD MODE
-        response = await axios.post(`${url}/api/food/add`, formData);
+        // ADD ITEM
+        response = await userApi.post("/food/add", formData);
       }
 
       if (response.data.success) {
@@ -123,7 +122,7 @@ export default function AddItems({ url }) {
                     />
                   ) : oldImage ? (
                     <img
-                      src={`${url}/images/${oldImage}`}
+                      src={`${import.meta.env.VITE_USER_API}/images/${oldImage}`}
                       alt="Old"
                       className="w-full h-full object-cover"
                     />
@@ -143,7 +142,7 @@ export default function AddItems({ url }) {
                 </label>
               </div>
 
-              {/* PRODUCT NAME */}
+              {/* NAME */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
                   Product Name
@@ -153,8 +152,7 @@ export default function AddItems({ url }) {
                   value={data.name}
                   onChange={onChangeHandler}
                   type="text"
-                  placeholder="Enter product name"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                  className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-orange-500"
                   required
                 />
               </div>
@@ -169,66 +167,55 @@ export default function AddItems({ url }) {
                   value={data.description}
                   onChange={onChangeHandler}
                   rows="4"
-                  placeholder="Write product description"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 resize-none"
+                  className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-orange-500"
                   required
                 />
               </div>
 
               {/* CATEGORY & PRICE */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Category
-                  </label>
-                  <select
-                    name="category"
-                    value={data.category}
-                    onChange={onChangeHandler}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
-                    required
-                  >
-                    <option value="">Select Category</option>
-                    <option>Pizza</option>
-                    <option>Burger</option>
-                    <option>Roll</option>
-                    <option>Chicken</option>
-                    <option>Egg</option>
-                    <option>Fish</option>
-                    <option>Paneer</option>
-                    <option>Curries</option>
-                    <option>Rice</option>
-                    <option>Roti</option>
-                    <option>Noodles</option>
-                    <option>Maggi</option>
-                    <option>Snacks</option>
-                    <option>Desserts</option>
-                    <option>Beverages</option>
-                  </select>
-                </div>
+                <select
+                  name="category"
+                  value={data.category}
+                  onChange={onChangeHandler}
+                  className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-orange-500"
+                  required
+                >
+                  <option value="">Select Category</option>
+                  <option>Pizza</option>
+                  <option>Burger</option>
+                  <option>Roll</option>
+                  <option>Chicken</option>
+                  <option>Egg</option>
+                  <option>Fish</option>
+                  <option>Paneer</option>
+                  <option>Curries</option>
+                  <option>Rice</option>
+                  <option>Roti</option>
+                  <option>Noodles</option>
+                  <option>Maggi</option>
+                  <option>Snacks</option>
+                  <option>Desserts</option>
+                  <option>Beverages</option>
+                </select>
 
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Price
-                  </label>
-                  <input
-                    name="price"
-                    value={data.price}
-                    onChange={onChangeHandler}
-                    type="number"
-                    placeholder="Enter price"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
-                    required
-                  />
-                </div>
+                <input
+                  name="price"
+                  value={data.price}
+                  onChange={onChangeHandler}
+                  type="number"
+                  placeholder="Price"
+                  className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-orange-500"
+                  required
+                />
               </div>
             </div>
 
             {/* FOOTER */}
-            <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-end">
+            <div className="px-6 py-4 bg-gray-50 border-t flex justify-end">
               <button
                 type="submit"
-                className="px-6 py-2.5 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition"
+                className="px-6 py-2.5 bg-orange-500 text-white rounded-lg hover:bg-orange-600"
               >
                 {id ? "Update Product" : "Add Product"}
               </button>

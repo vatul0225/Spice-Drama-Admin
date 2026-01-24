@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { Clock, MapPin, Phone, User, CreditCard } from "lucide-react";
-import axios from "axios";
 import { toast } from "react-toastify";
+import userApi from "../../services/userApi";
 
-export default function Orders({ url }) {
+export default function Orders() {
   const [orders, setOrders] = useState([]);
 
-  // FETCH ALL ORDERS
+  /* ---------------- FETCH ALL ORDERS ---------------- */
   const fetchAllOrders = async () => {
     try {
-      const response = await axios.get(url + "/api/order/list");
+      const response = await userApi.get("/order/list");
       if (response.data.success) {
         setOrders(response.data.data);
       } else {
@@ -21,22 +21,28 @@ export default function Orders({ url }) {
     }
   };
 
+  /* ---------------- UPDATE ORDER STATUS ---------------- */
   const statusHandler = async (event, orderId) => {
-    const response = await axios.post(url + "/api/order/status", {
-      orderId,
-      status: event.target.value,
-    });
-    if (response.data.success) {
-      await fetchAllOrders();
+    try {
+      const response = await userApi.post("/order/status", {
+        orderId,
+        status: event.target.value,
+      });
+
+      if (response.data.success) {
+        fetchAllOrders();
+      } else {
+        toast.error("Failed to update status");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Server error while updating status");
     }
   };
 
   useEffect(() => {
-    if (url) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      fetchAllOrders();
-    }
-  }, [url]);
+    fetchAllOrders();
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -61,33 +67,31 @@ export default function Orders({ url }) {
               </h2>
               <p className="text-sm text-gray-500 flex items-center gap-2">
                 {order.date && (
-                  <>
-                    <div className="flex gap-2">
-                      <p>
-                        📅{" "}
-                        {new Date(order.date).toLocaleDateString("en-IN", {
-                          day: "2-digit",
-                          month: "short",
-                          year: "numeric",
-                        })}
-                      </p>
-                      <p>
-                        ⏰{" "}
-                        {new Date(order.date).toLocaleTimeString("en-IN", {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </p>
-                    </div>
-                  </>
+                  <div className="flex gap-3">
+                    <p>
+                      📅{" "}
+                      {new Date(order.date).toLocaleDateString("en-IN", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                      })}
+                    </p>
+                    <p>
+                      ⏰{" "}
+                      {new Date(order.date).toLocaleTimeString("en-IN", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </p>
+                  </div>
                 )}
               </p>
             </div>
 
-            {/* STATUS DROPDOWN */}
+            {/* STATUS */}
             <select
               value={order.status}
-              onChange={(event) => statusHandler(event, order._id)}
+              onChange={(e) => statusHandler(e, order._id)}
               className={`px-4 py-2 rounded-lg border text-sm font-medium cursor-pointer outline-none
                 ${
                   order.status === "pending" &&
@@ -174,8 +178,7 @@ export default function Orders({ url }) {
             </table>
           </div>
 
-          {/* TOTAL */}
-          {/* BILL DETAILS */}
+          {/* BILL */}
           <div className="border-t pt-4 space-y-2 text-sm text-gray-700">
             <div className="flex justify-between">
               <span>Item Total</span>

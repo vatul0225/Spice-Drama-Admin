@@ -12,9 +12,6 @@ import "react-toastify/dist/ReactToastify.css";
 import "./index.css";
 
 const App = () => {
-  // const url = "http://localhost:4000";
-  const url = import.meta.env.VITE_ADMIN_API;
-
   return (
     <BrowserRouter>
       <AuthProvider>
@@ -33,10 +30,12 @@ const App = () => {
             }
           >
             <Route index element={<Navigate to="add" replace />} />
-            <Route path="add" element={<Add url={url} />} />
-            <Route path="/add/:id" element={<Add url={url} />} />
-            <Route path="list" element={<List url={url} />} />
-            <Route path="orders" element={<Orders url={url} />} />
+
+            {/* Admin pages */}
+            <Route path="add" element={<Add />} />
+            <Route path="add/:id" element={<Add />} />
+            <Route path="list" element={<List />} />
+            <Route path="orders" element={<Orders />} />
 
             {/* User Management - Admin Only */}
             <Route

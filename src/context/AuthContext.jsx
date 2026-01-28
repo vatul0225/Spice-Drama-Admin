@@ -4,7 +4,12 @@ import adminApi from "../services/adminApi";
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  // 🔥 Load user from localStorage first
+  const [user, setUser] = useState(() => {
+    const savedUser = localStorage.getItem("admin_user");
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
+
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -16,8 +21,10 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await adminApi.get("/auth/me");
       setUser(response.data.user);
+      localStorage.setItem("admin_user", JSON.stringify(response.data.user));
     } catch (error) {
       setUser(null);
+      localStorage.removeItem("admin_user");
     } finally {
       setLoading(false);
     }
@@ -27,6 +34,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (credentials) => {
     const response = await adminApi.post("/auth/login", credentials);
     setUser(response.data.user);
+    localStorage.setItem("admin_user", JSON.stringify(response.data.user));
     return response.data;
   };
 
@@ -34,10 +42,11 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     await adminApi.post("/auth/logout");
     setUser(null);
+    localStorage.removeItem("admin_user");
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading, checkAuth }}>
+    <AuthContext.Provider value={{ user, login, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );

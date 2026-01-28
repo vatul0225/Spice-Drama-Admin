@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext";
 const ProtectedRoute = ({ children, requiredRole }) => {
   const { user, loading } = useAuth();
 
+  // ⏳ Wait for auth check
   if (loading) {
     return (
       <div
@@ -19,12 +20,14 @@ const ProtectedRoute = ({ children, requiredRole }) => {
     );
   }
 
+  // 🔐 Not logged in
   if (!user) {
     return <Navigate to="/login" replace />;
   }
 
+  // 🚫 Role not allowed
   if (requiredRole && user.role !== requiredRole && user.role !== "admin") {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to="/" replace />; // ✅ FIX HERE
   }
 
   return children;

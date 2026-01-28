@@ -51,8 +51,9 @@ export default function List() {
 
   return (
     <div
-      className="space-y-4 sm:space-y-5 px-2 sm:px-4 lg:px-6 py-3 sm:py-4 
-                w-full min-w-0 overflow-x-hidden"
+      className="space-y-4 sm:space-y-5 px-2 sm:px-4 lg:px-6 py-3 sm:py-4
+            flex-1 min-w-0 max-w-full
+            overflow-x-hidden overflow-y-auto"
     >
       {/* HEADER */}
       <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">

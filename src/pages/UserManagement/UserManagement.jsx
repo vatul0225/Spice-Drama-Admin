@@ -106,7 +106,7 @@ export default function UserManagement() {
 
         <button
           onClick={() => setShowForm(!showForm)}
-          className="flex items-center justify-center gap-2 
+          className="cursor-pointer flex items-center justify-center gap-2 
                      bg-orange-500 text-white 
                      px-4 py-2 rounded-lg 
                      hover:bg-orange-600 transition
@@ -275,7 +275,7 @@ export default function UserManagement() {
               <button
                 type="button"
                 onClick={() => setShowForm(false)}
-                className="order-2 sm:order-1 sm:flex-none sm:px-6 bg-gray-100 hover:bg-gray-200 
+                className="cursor-pointer order-2 sm:order-1 sm:flex-none sm:px-6 bg-gray-100 hover:bg-gray-200 
                            text-gray-700 py-2.5 sm:py-3 rounded-lg sm:rounded-xl transition-all font-semibold
                            border border-gray-200 text-sm"
               >
@@ -283,7 +283,7 @@ export default function UserManagement() {
               </button>
               <button
                 type="submit"
-                className="order-1 sm:order-2 flex-1 bg-gradient-to-r from-green-600 to-green-500 
+                className="cursor-pointer order-1 sm:order-2 flex-1 bg-gradient-to-r from-green-600 to-green-500 
                            hover:from-green-700 hover:to-green-600 
                            text-white py-2.5 sm:py-3 px-6 sm:px-8 rounded-lg sm:rounded-xl transition-all font-semibold
                            shadow-md hover:shadow-lg flex items-center justify-center gap-2 text-sm"
@@ -371,7 +371,7 @@ export default function UserManagement() {
                       <td className="px-4 sm:px-5 py-3 text-center">
                         <button
                           onClick={() => handleDeleteUser(u._id)}
-                          className="text-red-500 hover:text-red-700 hover:bg-red-50 
+                          className="cursor-pointer text-red-500 hover:text-red-700 hover:bg-red-50 
                                      p-2 rounded-lg transition inline-flex items-center"
                           title="Delete user"
                         >
@@ -408,7 +408,7 @@ export default function UserManagement() {
                     </div>
                     <button
                       onClick={() => handleDeleteUser(u._id)}
-                      className="flex-shrink-0 text-red-500 hover:text-red-700 
+                      className="cursor-pointer flex-shrink-0 text-red-500 hover:text-red-700 
                                  hover:bg-red-50 p-2 rounded-lg transition"
                       title="Delete user"
                     >

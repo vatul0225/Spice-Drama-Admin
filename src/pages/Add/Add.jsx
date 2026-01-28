@@ -199,7 +199,7 @@ export default function AddItems() {
             <div className="p-4 border-t bg-gray-50">
               <button
                 type="submit"
-                className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-lg"
+                className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-lg cursor-pointer"
               >
                 {id ? "Update Item" : "Add Item"}
               </button>

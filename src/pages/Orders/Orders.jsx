@@ -81,7 +81,7 @@ export default function Orders() {
             <select
               value={order.status}
               onChange={(e) => statusHandler(e, order._id)}
-              className={`w-full sm:w-56 px-4 py-2 rounded-lg border text-sm font-medium
+              className={`cursor-pointer w-full sm:w-56 px-4 py-2 rounded-lg border text-sm font-medium
                 ${
                   order.status === "pending" &&
                   "bg-yellow-50 text-yellow-700 border-yellow-300"

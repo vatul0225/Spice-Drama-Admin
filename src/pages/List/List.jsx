@@ -65,7 +65,7 @@ export default function List() {
 
           <button
             onClick={() => navigate("/add")}
-            className="flex items-center justify-center gap-2 
+            className="cursor-pointer flex items-center justify-center gap-2 
                        bg-orange-500 hover:bg-orange-600 
                        text-white px-4 py-2 rounded-lg 
                        w-full sm:w-auto shadow-sm transition-all

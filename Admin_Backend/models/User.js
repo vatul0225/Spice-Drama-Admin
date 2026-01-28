@@ -20,7 +20,7 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ["super_admin", "admin", "editor", "viewer"], // Added super_admin
+    enum: ["admin", "editor", "viewer"],
     default: "viewer",
   },
   isActive: {
@@ -37,7 +37,7 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-// Password hash
+// Password hash - UPDATED FIX
 userSchema.pre("save", async function () {
   if (!this.isModified("password")) return;
   this.password = await bcrypt.hash(this.password, 10);

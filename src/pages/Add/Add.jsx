@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Upload } from "lucide-react";
 import { toast } from "react-toastify";
 import { useParams, useNavigate } from "react-router-dom";
-import adminApi from "../../services/adminApi"; // ✅ Changed from userApi
+import userApi from "../../services/userApi";
 
 export default function AddItems() {
   const { id } = useParams();
@@ -25,7 +25,7 @@ export default function AddItems() {
     if (id) {
       const fetchItem = async () => {
         try {
-          const res = await adminApi.get(`/food/single/${id}`); // ✅ Using adminApi
+          const res = await userApi.get(`/food/single/${id}`);
           if (res.data.success) {
             setData({
               name: res.data.data.name,
@@ -36,8 +36,7 @@ export default function AddItems() {
             setOldImage(res.data.data.image);
           }
         } catch (error) {
-          console.error(error);
-          toast.error(error.response?.data?.error || "Failed to load item");
+          toast.error("Failed to load item");
         }
       };
       fetchItem();
@@ -69,10 +68,10 @@ export default function AddItems() {
 
       if (id) {
         // UPDATE ITEM
-        response = await adminApi.put(`/food/update/${id}`, formData); // ✅ Using adminApi
+        response = await userApi.put(`/food/update/${id}`, formData);
       } else {
         // ADD ITEM
-        response = await adminApi.post("/food/add", formData); // ✅ Using adminApi
+        response = await userApi.post("/food/add", formData);
       }
 
       if (response.data.success) {
@@ -85,7 +84,7 @@ export default function AddItems() {
       }
     } catch (error) {
       console.error(error);
-      toast.error(error.response?.data?.error || "Server error");
+      toast.error("Server error");
     }
   };
 
@@ -123,7 +122,7 @@ export default function AddItems() {
                     />
                   ) : oldImage ? (
                     <img
-                      src={`${import.meta.env.VITE_ADMIN_API}/images/${oldImage}`} // ✅ Changed to VITE_ADMIN_API
+                      src={`${import.meta.env.VITE_USER_API}/images/${oldImage}`}
                       alt="Old"
                       className="w-full h-full object-cover"
                     />
@@ -153,7 +152,6 @@ export default function AddItems() {
                   value={data.name}
                   onChange={onChangeHandler}
                   type="text"
-                  placeholder="e.g., Margherita Pizza"
                   className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-orange-500"
                   required
                 />
@@ -169,7 +167,6 @@ export default function AddItems() {
                   value={data.description}
                   onChange={onChangeHandler}
                   rows="4"
-                  placeholder="Describe your product..."
                   className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-orange-500"
                   required
                 />
@@ -177,50 +174,40 @@ export default function AddItems() {
 
               {/* CATEGORY & PRICE */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Category
-                  </label>
-                  <select
-                    name="category"
-                    value={data.category}
-                    onChange={onChangeHandler}
-                    className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-orange-500"
-                    required
-                  >
-                    <option value="">Select Category</option>
-                    <option>Pizza</option>
-                    <option>Burger</option>
-                    <option>Roll</option>
-                    <option>Chicken</option>
-                    <option>Egg</option>
-                    <option>Fish</option>
-                    <option>Paneer</option>
-                    <option>Curries</option>
-                    <option>Rice</option>
-                    <option>Roti</option>
-                    <option>Noodles</option>
-                    <option>Maggi</option>
-                    <option>Snacks</option>
-                    <option>Desserts</option>
-                    <option>Beverages</option>
-                  </select>
-                </div>
+                <select
+                  name="category"
+                  value={data.category}
+                  onChange={onChangeHandler}
+                  className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-orange-500"
+                  required
+                >
+                  <option value="">Select Category</option>
+                  <option>Pizza</option>
+                  <option>Burger</option>
+                  <option>Roll</option>
+                  <option>Chicken</option>
+                  <option>Egg</option>
+                  <option>Fish</option>
+                  <option>Paneer</option>
+                  <option>Curries</option>
+                  <option>Rice</option>
+                  <option>Roti</option>
+                  <option>Noodles</option>
+                  <option>Maggi</option>
+                  <option>Snacks</option>
+                  <option>Desserts</option>
+                  <option>Beverages</option>
+                </select>
 
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Price (₹)
-                  </label>
-                  <input
-                    name="price"
-                    value={data.price}
-                    onChange={onChangeHandler}
-                    type="number"
-                    placeholder="99"
-                    className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-orange-500"
-                    required
-                  />
-                </div>
+                <input
+                  name="price"
+                  value={data.price}
+                  onChange={onChangeHandler}
+                  type="number"
+                  placeholder="Price"
+                  className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-orange-500"
+                  required
+                />
               </div>
             </div>
 
@@ -228,7 +215,7 @@ export default function AddItems() {
             <div className="px-6 py-4 bg-gray-50 border-t flex justify-end">
               <button
                 type="submit"
-                className="px-6 py-2.5 bg-orange-500 text-white rounded-lg hover:bg-orange-600 font-semibold transition"
+                className="px-6 py-2.5 bg-orange-500 text-white rounded-lg hover:bg-orange-600"
               >
                 {id ? "Update Product" : "Add Product"}
               </button>

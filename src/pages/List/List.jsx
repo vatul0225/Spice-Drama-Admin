@@ -3,41 +3,32 @@ import { Edit, Trash2, Eye, PlusCircle, Search, X } from "lucide-react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import adminApi from "../../services/adminApi"; // ✅ Changed from userApi
+import userApi from "../../services/userApi";
 
 export default function List() {
   const [list, setList] = useState([]);
   const [search, setSearch] = useState("");
   const [viewItem, setViewItem] = useState(null);
-  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
   /* ---------------- FETCH LIST ---------------- */
   const fetchList = async () => {
-    setLoading(true);
     try {
-      const response = await adminApi.get("/food/list"); // ✅ Using adminApi
+      const response = await userApi.get("/food/list");
       if (response.data.success) {
         setList(response.data.data);
       }
     } catch (error) {
       console.error(error);
-      toast.error(error.response?.data?.error || "Failed to fetch items");
-    } finally {
-      setLoading(false);
+      toast.error("Server error");
     }
   };
 
   /* ---------------- REMOVE ITEM ---------------- */
   const remove = async (foodId) => {
-    if (!window.confirm("Are you sure you want to delete this item?")) {
-      return;
-    }
-
     try {
-      const response = await adminApi.post("/food/remove", {
-        // ✅ Using adminApi
+      const response = await userApi.post("/food/remove", {
         id: foodId,
       });
 
@@ -49,7 +40,7 @@ export default function List() {
       }
     } catch (error) {
       console.error(error);
-      toast.error(error.response?.data?.error || "Failed to remove item");
+      toast.error("Failed to remove item");
     }
   };
 
@@ -69,7 +60,7 @@ export default function List() {
         <h1 className="text-xl sm:text-2xl font-bold">Menu Items</h1>
         <button
           onClick={() => navigate("/add")}
-          className="flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg w-full sm:w-auto transition"
+          className="flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg w-full sm:w-auto"
         >
           <PlusCircle size={18} /> Add New Item
         </button>
@@ -82,27 +73,9 @@ export default function List() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search items..."
-          className="w-full pl-9 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 outline-none"
+          className="w-full pl-9 pr-4 py-2 border rounded-lg"
         />
       </div>
-
-      {/* Loading State */}
-      {loading && (
-        <div className="text-center py-10">
-          <p className="text-gray-500">Loading items...</p>
-        </div>
-      )}
-
-      {/* Empty State */}
-      {!loading && filteredItems.length === 0 && (
-        <div className="text-center py-10">
-          <p className="text-gray-500">
-            {search
-              ? "No items found matching your search"
-              : "No items added yet"}
-          </p>
-        </div>
-      )}
 
       {/* Mobile Cards */}
       <div className="grid gap-4 md:hidden">
@@ -112,7 +85,7 @@ export default function List() {
             className="bg-white rounded-xl shadow-sm border p-4 flex gap-4"
           >
             <img
-              src={`${import.meta.env.VITE_ADMIN_API}/images/${item.image}`} // ✅ Changed to VITE_ADMIN_API
+              src={`${import.meta.env.VITE_USER_API}/images/${item.image}`}
               alt={item.name}
               className="w-20 h-20 rounded-lg object-cover flex-shrink-0"
             />
@@ -125,17 +98,17 @@ export default function List() {
               <div className="flex gap-4 pt-2">
                 <Eye
                   size={18}
-                  className="text-blue-500 cursor-pointer hover:text-blue-600"
+                  className="text-blue-500 cursor-pointer"
                   onClick={() => setViewItem(item)}
                 />
                 <Edit
                   size={18}
-                  className="text-orange-500 cursor-pointer hover:text-orange-600"
+                  className="text-orange-500 cursor-pointer"
                   onClick={() => navigate(`/add/${item._id}`)}
                 />
                 <Trash2
                   size={18}
-                  className="text-red-500 cursor-pointer hover:text-red-600"
+                  className="text-red-500 cursor-pointer"
                   onClick={() => remove(item._id)}
                 />
               </div>
@@ -157,14 +130,10 @@ export default function List() {
           </thead>
           <tbody>
             {filteredItems.map((item) => (
-              <tr
-                key={item._id}
-                className="border-t hover:bg-gray-50 transition"
-              >
+              <tr key={item._id} className="border-t">
                 <td className="px-4 py-3 flex items-center gap-3">
                   <img
-                    src={`${import.meta.env.VITE_ADMIN_API}/images/${item.image}`} // ✅ Changed to VITE_ADMIN_API
-                    alt={item.name}
+                    src={`${import.meta.env.VITE_USER_API}/images/${item.image}`}
                     className="w-12 h-12 rounded object-cover"
                   />
                   {item.name}
@@ -175,17 +144,17 @@ export default function List() {
                   <div className="flex justify-center gap-4">
                     <Eye
                       size={18}
-                      className="text-blue-500 cursor-pointer hover:text-blue-600 transition"
+                      className="text-blue-500 cursor-pointer"
                       onClick={() => setViewItem(item)}
                     />
                     <Edit
                       size={18}
-                      className="text-orange-500 cursor-pointer hover:text-orange-600 transition"
+                      className="text-orange-500 cursor-pointer"
                       onClick={() => navigate(`/add/${item._id}`)}
                     />
                     <Trash2
                       size={18}
-                      className="text-red-500 cursor-pointer hover:text-red-600 transition"
+                      className="text-red-500 cursor-pointer"
                       onClick={() => remove(item._id)}
                     />
                   </div>
@@ -215,14 +184,13 @@ export default function List() {
             >
               <button
                 onClick={() => setViewItem(null)}
-                className="absolute top-3 right-3 text-gray-500 hover:text-red-500 transition"
+                className="absolute top-3 right-3 text-gray-500 hover:text-red-500"
               >
                 <X />
               </button>
 
               <img
-                src={`${import.meta.env.VITE_ADMIN_API}/images/${viewItem.image}`} // ✅ Changed to VITE_ADMIN_API
-                alt={viewItem.name}
+                src={`${import.meta.env.VITE_USER_API}/images/${viewItem.image}`}
                 className="w-full h-52 object-cover rounded-t-lg"
               />
 

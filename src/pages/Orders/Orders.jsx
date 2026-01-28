@@ -1,17 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { Clock, MapPin, Phone, User, CreditCard } from "lucide-react";
 import { toast } from "react-toastify";
-import adminApi from "../../services/adminApi"; // ✅ Changed from userApi
+import userApi from "../../services/userApi";
 
 export default function Orders() {
   const [orders, setOrders] = useState([]);
-  const [loading, setLoading] = useState(false);
 
   /* ---------------- FETCH ALL ORDERS ---------------- */
   const fetchAllOrders = async () => {
-    setLoading(true);
     try {
-      const response = await adminApi.get("/order/list"); // ✅ Using adminApi
+      const response = await userApi.get("/order/list");
       if (response.data.success) {
         setOrders(response.data.data);
       } else {
@@ -19,34 +17,26 @@ export default function Orders() {
       }
     } catch (error) {
       console.error(error);
-      toast.error(
-        error.response?.data?.error || "Server error while fetching orders",
-      );
-    } finally {
-      setLoading(false);
+      toast.error("Server error while fetching orders");
     }
   };
 
   /* ---------------- UPDATE ORDER STATUS ---------------- */
   const statusHandler = async (event, orderId) => {
     try {
-      const response = await adminApi.post("/order/status", {
-        // ✅ Using adminApi
+      const response = await userApi.post("/order/status", {
         orderId,
         status: event.target.value,
       });
 
       if (response.data.success) {
-        toast.success("Order status updated");
         fetchAllOrders();
       } else {
         toast.error("Failed to update status");
       }
     } catch (error) {
       console.error(error);
-      toast.error(
-        error.response?.data?.error || "Server error while updating status",
-      );
+      toast.error("Server error while updating status");
     }
   };
 
@@ -58,13 +48,7 @@ export default function Orders() {
     <div className="space-y-6">
       <h1 className="text-2xl font-bold text-gray-800">Customer Orders</h1>
 
-      {loading && (
-        <div className="bg-white p-8 rounded-xl shadow text-center text-gray-500">
-          Loading orders...
-        </div>
-      )}
-
-      {!loading && orders.length === 0 && (
+      {orders.length === 0 && (
         <div className="bg-white p-8 rounded-xl shadow text-center text-gray-500">
           No orders found
         </div>
@@ -108,7 +92,7 @@ export default function Orders() {
             <select
               value={order.status}
               onChange={(e) => statusHandler(e, order._id)}
-              className={`px-4 py-2 rounded-lg border text-sm font-medium cursor-pointer outline-none transition
+              className={`px-4 py-2 rounded-lg border text-sm font-medium cursor-pointer outline-none
                 ${
                   order.status === "pending" &&
                   "bg-yellow-50 text-yellow-700 border-yellow-300"
@@ -142,7 +126,7 @@ export default function Orders() {
           {/* CUSTOMER INFO */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="flex items-start gap-3">
-              <User className="w-5 h-5 text-orange-500 flex-shrink-0" />
+              <User className="w-5 h-5 text-orange-500" />
               <div>
                 <p className="font-medium">
                   {order.address?.first_name} {order.address?.last_name}
@@ -155,7 +139,7 @@ export default function Orders() {
             </div>
 
             <div className="flex items-start gap-3">
-              <MapPin className="w-5 h-5 text-orange-500 flex-shrink-0" />
+              <MapPin className="w-5 h-5 text-orange-500" />
               <p className="text-sm text-gray-600">
                 {order.address?.street}, {order.address?.city},{" "}
                 {order.address?.state}
@@ -163,7 +147,7 @@ export default function Orders() {
             </div>
 
             <div className="flex items-start gap-3">
-              <CreditCard className="w-5 h-5 text-orange-500 flex-shrink-0" />
+              <CreditCard className="w-5 h-5 text-orange-500" />
               <p className="text-sm text-gray-600">
                 {order.paymentMethod || "Cash On Delivery"}
               </p>

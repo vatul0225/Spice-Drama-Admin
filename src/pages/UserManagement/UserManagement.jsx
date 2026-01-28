@@ -137,31 +137,31 @@ export default function UserManagement() {
 
       {/* ADD USER FORM */}
       {showForm && (
-        <div className="bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-lg border border-gray-100 p-6 sm:p-8 w-full sm:max-w-2xl mx-auto">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center">
-              <UserPlus className="text-orange-600" size={20} />
+        <div className="bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-lg border border-gray-100 p-4 sm:p-6 lg:p-8 w-full max-w-full lg:max-w-2xl mx-auto">
+          <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-orange-100 rounded-lg sm:rounded-xl flex items-center justify-center flex-shrink-0">
+              <UserPlus className="text-orange-600" size={18} />
             </div>
-            <div>
-              <h2 className="font-bold text-xl text-gray-800">
+            <div className="min-w-0">
+              <h2 className="font-bold text-base sm:text-xl text-gray-800">
                 Create New User
               </h2>
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-gray-500 hidden sm:block">
                 Add a new user to the system
               </p>
             </div>
           </div>
 
-          <form onSubmit={handleCreateUser} className="space-y-5">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <form onSubmit={handleCreateUser} className="space-y-4 sm:space-y-5">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5">
               {/* Username Field */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2">
                   Username <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Edit className="text-gray-400" size={16} />
+                  <div className="absolute inset-y-0 left-0 pl-2.5 sm:pl-3 flex items-center pointer-events-none">
+                    <Edit className="text-gray-400" size={14} />
                   </div>
                   <input
                     type="text"
@@ -170,7 +170,7 @@ export default function UserManagement() {
                     onChange={(e) =>
                       setNewUser({ ...newUser, username: e.target.value })
                     }
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl
+                    className="w-full pl-8 sm:pl-10 pr-3 sm:pr-4 py-2.5 sm:py-3 text-sm border border-gray-300 rounded-lg sm:rounded-xl
                                focus:ring-2 focus:ring-orange-400 focus:border-orange-400 
                                outline-none transition-all bg-white"
                     required
@@ -180,12 +180,12 @@ export default function UserManagement() {
 
               {/* Email Field */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2">
                   Email Address <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <AlertCircle className="text-gray-400" size={16} />
+                  <div className="absolute inset-y-0 left-0 pl-2.5 sm:pl-3 flex items-center pointer-events-none">
+                    <AlertCircle className="text-gray-400" size={14} />
                   </div>
                   <input
                     type="email"
@@ -194,7 +194,7 @@ export default function UserManagement() {
                     onChange={(e) =>
                       setNewUser({ ...newUser, email: e.target.value })
                     }
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl
+                    className="w-full pl-8 sm:pl-10 pr-3 sm:pr-4 py-2.5 sm:py-3 text-sm border border-gray-300 rounded-lg sm:rounded-xl
                                focus:ring-2 focus:ring-orange-400 focus:border-orange-400 
                                outline-none transition-all bg-white"
                     required
@@ -205,12 +205,12 @@ export default function UserManagement() {
 
             {/* Password Field */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2">
                 Password <span className="text-red-500">*</span>
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Shield className="text-gray-400" size={16} />
+                <div className="absolute inset-y-0 left-0 pl-2.5 sm:pl-3 flex items-center pointer-events-none">
+                  <Shield className="text-gray-400" size={14} />
                 </div>
                 <input
                   type="password"
@@ -219,24 +219,24 @@ export default function UserManagement() {
                   onChange={(e) =>
                     setNewUser({ ...newUser, password: e.target.value })
                   }
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl
+                  className="w-full pl-8 sm:pl-10 pr-3 sm:pr-4 py-2.5 sm:py-3 text-sm border border-gray-300 rounded-lg sm:rounded-xl
                              focus:ring-2 focus:ring-orange-400 focus:border-orange-400 
                              outline-none transition-all bg-white"
                   required
                 />
               </div>
-              <p className="text-xs text-gray-500 mt-1.5">
+              <p className="text-xs text-gray-500 mt-1 sm:mt-1.5">
                 Minimum 6 characters recommended
               </p>
             </div>
 
             {/* Role Field */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2">
                 User Role <span className="text-red-500">*</span>
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <div className="absolute inset-y-0 left-0 pl-2.5 sm:pl-3 flex items-center pointer-events-none">
                   {roleIcons[newUser.role]}
                 </div>
                 <select
@@ -244,7 +244,7 @@ export default function UserManagement() {
                   onChange={(e) =>
                     setNewUser({ ...newUser, role: e.target.value })
                   }
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl
+                  className="w-full pl-8 sm:pl-10 pr-8 sm:pr-10 py-2.5 sm:py-3 text-sm border border-gray-300 rounded-lg sm:rounded-xl
                              focus:ring-2 focus:ring-orange-400 focus:border-orange-400 
                              outline-none transition-all bg-white appearance-none cursor-pointer"
                 >
@@ -252,7 +252,7 @@ export default function UserManagement() {
                   <option value="editor">✏️ Editor - Can edit content</option>
                   <option value="viewer">👁️ Viewer - View only access</option>
                 </select>
-                <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                <div className="absolute inset-y-0 right-0 pr-2.5 sm:pr-3 flex items-center pointer-events-none">
                   <svg
                     className="w-4 h-4 text-gray-400"
                     fill="none"
@@ -271,24 +271,24 @@ export default function UserManagement() {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex gap-3 pt-2">
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-2">
               <button
                 type="button"
                 onClick={() => setShowForm(false)}
-                className="flex-1 sm:flex-none sm:px-6 bg-gray-100 hover:bg-gray-200 
-                           text-gray-700 py-3 rounded-xl transition-all font-semibold
-                           border border-gray-200"
+                className="order-2 sm:order-1 sm:flex-none sm:px-6 bg-gray-100 hover:bg-gray-200 
+                           text-gray-700 py-2.5 sm:py-3 rounded-lg sm:rounded-xl transition-all font-semibold
+                           border border-gray-200 text-sm"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="flex-1 bg-gradient-to-r from-green-600 to-green-500 
+                className="order-1 sm:order-2 flex-1 bg-gradient-to-r from-green-600 to-green-500 
                            hover:from-green-700 hover:to-green-600 
-                           text-white py-3 px-8 rounded-xl transition-all font-semibold
-                           shadow-md hover:shadow-lg flex items-center justify-center gap-2"
+                           text-white py-2.5 sm:py-3 px-6 sm:px-8 rounded-lg sm:rounded-xl transition-all font-semibold
+                           shadow-md hover:shadow-lg flex items-center justify-center gap-2 text-sm"
               >
-                <Check size={18} />
+                <Check size={16} />
                 Create User
               </button>
             </div>

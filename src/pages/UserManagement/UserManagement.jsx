@@ -31,10 +31,9 @@ export default function UserManagement() {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const response = await adminApi.get("/auth/users");
-      setUsers(response.data.users || []);
+      const res = await adminApi.get("/auth/users");
+      setUsers(res.data.users || []);
     } catch (err) {
-      console.error(err);
       showMessage("error", "Failed to fetch users");
     } finally {
       setLoading(false);
@@ -49,7 +48,7 @@ export default function UserManagement() {
       setNewUser({ username: "", email: "", password: "", role: "viewer" });
       setShowForm(false);
       fetchUsers();
-      showMessage("success", "User created successfully!");
+      showMessage("success", "User created successfully");
     } catch {
       showMessage("error", "Failed to create user");
     }
@@ -57,11 +56,11 @@ export default function UserManagement() {
 
   /* ---------------- DELETE USER ---------------- */
   const handleDeleteUser = async (id) => {
-    if (!window.confirm("Delete this user?")) return;
+    if (!window.confirm("Are you sure you want to delete this user?")) return;
     try {
       await adminApi.delete(`/auth/users/${id}`);
       fetchUsers();
-      showMessage("success", "User deleted successfully!");
+      showMessage("success", "User deleted successfully");
     } catch {
       showMessage("error", "Failed to delete user");
     }
@@ -72,121 +71,165 @@ export default function UserManagement() {
     setTimeout(() => setMessage({ type: "", text: "" }), 4000);
   };
 
-  const getRoleIcon = (role) => {
-    if (role === "admin") return <Shield size={16} />;
-    if (role === "editor") return <Edit size={16} />;
-    return <Eye size={16} />;
+  const roleStyles = {
+    admin: "bg-red-100 text-red-700",
+    editor: "bg-blue-100 text-blue-700",
+    viewer: "bg-gray-100 text-gray-700",
+  };
+
+  const roleIcons = {
+    admin: <Shield size={14} />,
+    editor: <Edit size={14} />,
+    viewer: <Eye size={14} />,
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-3 sm:px-5 space-y-6">
+    <div className="max-w-7xl mx-auto px-3 sm:px-5 py-6 space-y-6">
       {/* HEADER */}
-      <div>
-        <h1 className="text-2xl font-bold text-gray-800">User Management</h1>
-        <p className="text-gray-600">
-          Manage admin panel users and permissions
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-800">User Management</h1>
+          <p className="text-sm text-gray-500">
+            Manage admin panel users and permissions
+          </p>
+        </div>
+
+        <button
+          onClick={() => setShowForm(!showForm)}
+          className="flex items-center justify-center gap-2 
+                     bg-orange-500 text-white 
+                     px-4 py-2 rounded-lg 
+                     hover:bg-orange-600 transition
+                     w-full sm:w-auto"
+        >
+          {showForm ? <X size={18} /> : <UserPlus size={18} />}
+          {showForm ? "Close Form" : "Add User"}
+        </button>
       </div>
 
       {/* MESSAGE */}
       {message.text && (
         <div
-          className={`p-4 rounded-lg flex items-center gap-2 ${
+          className={`flex items-center gap-2 px-4 py-3 rounded-lg text-sm ${
             message.type === "success"
-              ? "bg-green-50 text-green-800"
-              : "bg-red-50 text-red-800"
+              ? "bg-green-50 text-green-700"
+              : "bg-red-50 text-red-700"
           }`}
         >
-          {message.type === "success" ? <Check /> : <AlertCircle />}
+          {message.type === "success" ? (
+            <Check size={18} />
+          ) : (
+            <AlertCircle size={18} />
+          )}
           {message.text}
         </div>
       )}
 
-      {/* ADD USER BUTTON */}
-      <button
-        onClick={() => setShowForm(!showForm)}
-        className="flex items-center gap-2 bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600"
-      >
-        {showForm ? <X /> : <UserPlus />}
-        {showForm ? "Cancel" : "Add New User"}
-      </button>
-
       {/* ADD USER FORM */}
       {showForm && (
-        <form
-          onSubmit={handleCreateUser}
-          className="bg-white p-4 rounded-lg shadow space-y-3 max-w-md"
-        >
-          <input
-            placeholder="Username"
-            value={newUser.username}
-            onChange={(e) =>
-              setNewUser({ ...newUser, username: e.target.value })
-            }
-            className="w-full border px-3 py-2 rounded"
-            required
-          />
-          <input
-            placeholder="Email"
-            value={newUser.email}
-            onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
-            className="w-full border px-3 py-2 rounded"
-            required
-          />
-          <input
-            placeholder="Password"
-            type="password"
-            value={newUser.password}
-            onChange={(e) =>
-              setNewUser({ ...newUser, password: e.target.value })
-            }
-            className="w-full border px-3 py-2 rounded"
-            required
-          />
-          <select
-            value={newUser.role}
-            onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
-            className="w-full border px-3 py-2 rounded"
-          >
-            <option value="admin">Admin</option>
-            <option value="editor">Editor</option>
-            <option value="viewer">Viewer</option>
-          </select>
+        <div className="bg-white rounded-xl shadow p-5 w-full sm:max-w-lg">
+          <h2 className="font-semibold text-lg mb-4">Create New User</h2>
 
-          <button className="bg-green-600 text-white px-4 py-2 rounded">
-            Create User
-          </button>
-        </form>
+          <form onSubmit={handleCreateUser} className="space-y-3">
+            <input
+              type="text"
+              placeholder="Username"
+              value={newUser.username}
+              onChange={(e) =>
+                setNewUser({ ...newUser, username: e.target.value })
+              }
+              className="w-full border rounded-lg px-3 py-3 sm:py-2 
+                         focus:ring-2 focus:ring-orange-400 outline-none"
+              required
+            />
+
+            <input
+              type="email"
+              placeholder="Email"
+              value={newUser.email}
+              onChange={(e) =>
+                setNewUser({ ...newUser, email: e.target.value })
+              }
+              className="w-full border rounded-lg px-3 py-3 sm:py-2 
+                         focus:ring-2 focus:ring-orange-400 outline-none"
+              required
+            />
+
+            <input
+              type="password"
+              placeholder="Password"
+              value={newUser.password}
+              onChange={(e) =>
+                setNewUser({ ...newUser, password: e.target.value })
+              }
+              className="w-full border rounded-lg px-3 py-3 sm:py-2 
+                         focus:ring-2 focus:ring-orange-400 outline-none"
+              required
+            />
+
+            <select
+              value={newUser.role}
+              onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
+              className="w-full border rounded-lg px-3 py-3 sm:py-2"
+            >
+              <option value="admin">Admin</option>
+              <option value="editor">Editor</option>
+              <option value="viewer">Viewer</option>
+            </select>
+
+            <button
+              type="submit"
+              className="w-full bg-green-600 hover:bg-green-700 
+                         text-white py-2 rounded-lg transition"
+            >
+              Create User
+            </button>
+          </form>
+        </div>
       )}
 
       {/* USERS TABLE */}
-      <div className="bg-white rounded-lg shadow overflow-x-auto">
+      <div className="bg-white rounded-xl shadow overflow-x-auto">
         {loading ? (
-          <p className="p-4">Loading users...</p>
+          <p className="p-6 text-gray-500">Loading users...</p>
         ) : users.length === 0 ? (
-          <p className="p-4">No users found</p>
+          <p className="p-6 text-gray-500">No users found</p>
         ) : (
-          <table className="w-full text-sm">
-            <thead className="bg-gray-100">
+          <table className="w-full text-xs sm:text-sm">
+            <thead className="bg-gray-50 text-gray-600">
               <tr>
-                <th className="px-4 py-3 text-left">Username</th>
-                <th className="px-4 py-3 text-left">Email</th>
-                <th className="px-4 py-3 text-left">Role</th>
-                <th className="px-4 py-3 text-center">Actions</th>
+                <th className="px-4 sm:px-5 py-3 text-left">Username</th>
+                <th className="px-4 sm:px-5 py-3 text-left">Email</th>
+                <th className="px-4 sm:px-5 py-3 text-left">Role</th>
+                <th className="px-4 sm:px-5 py-3 text-center">Action</th>
               </tr>
             </thead>
+
             <tbody>
               {users.map((u) => (
-                <tr key={u._id} className="border-t">
-                  <td className="px-4 py-2">{u.username}</td>
-                  <td className="px-4 py-2">{u.email}</td>
-                  <td className="px-4 py-2 flex items-center gap-2 capitalize">
-                    {getRoleIcon(u.role)} {u.role}
+                <tr
+                  key={u._id}
+                  className="border-t hover:bg-gray-50 transition"
+                >
+                  <td className="px-4 sm:px-5 py-3 font-medium">
+                    {u.username}
                   </td>
-                  <td className="px-4 py-2 text-center">
+                  <td className="px-4 sm:px-5 py-3 text-gray-600">{u.email}</td>
+                  <td className="px-4 sm:px-5 py-3">
+                    <span
+                      className={`inline-flex items-center gap-1 
+                      px-3 py-1 rounded-full 
+                      text-xs font-medium capitalize whitespace-nowrap
+                      ${roleStyles[u.role]}`}
+                    >
+                      {roleIcons[u.role]}
+                      {u.role}
+                    </span>
+                  </td>
+                  <td className="px-4 sm:px-5 py-3 text-center">
                     <button
                       onClick={() => handleDeleteUser(u._id)}
-                      className="text-red-500 hover:text-red-700"
+                      className="text-red-500 hover:text-red-700 transition"
                     >
                       <Trash2 size={18} />
                     </button>

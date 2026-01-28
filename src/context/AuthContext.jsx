@@ -5,43 +5,43 @@ const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
-    const savedUser = localStorage.getItem("admin_user");
-    return savedUser ? JSON.parse(savedUser) : null;
+    const saved = localStorage.getItem("admin_user");
+    return saved ? JSON.parse(saved) : null;
   });
 
   const [loading, setLoading] = useState(true);
 
+  /* ---------------- INIT AUTH (JWT) ---------------- */
   useEffect(() => {
-    checkAuth();
-  }, []);
+    const token = localStorage.getItem("admin_token");
+    const savedUser = localStorage.getItem("admin_user");
 
-  /* ---------------- SAFE CHECK AUTH ---------------- */
-  const checkAuth = async () => {
-    try {
-      const response = await adminApi.get("/auth/me");
-      setUser(response.data.user);
-      localStorage.setItem("admin_user", JSON.stringify(response.data.user));
-    } catch (error) {
-      // ❌ DO NOT logout user on refresh failure
-      console.warn("Auth check failed, keeping existing session");
-    } finally {
-      setLoading(false);
+    if (token && savedUser) {
+      setUser(JSON.parse(savedUser));
+    } else {
+      setUser(null);
     }
-  };
+
+    setLoading(false);
+  }, []);
 
   /* ---------------- LOGIN ---------------- */
   const login = async (credentials) => {
-    const response = await adminApi.post("/auth/login", credentials);
-    setUser(response.data.user);
-    localStorage.setItem("admin_user", JSON.stringify(response.data.user));
-    return response.data;
+    const res = await adminApi.post("/auth/login", credentials);
+
+    // 🔐 SAVE JWT + USER
+    localStorage.setItem("admin_token", res.data.token);
+    localStorage.setItem("admin_user", JSON.stringify(res.data.user));
+
+    setUser(res.data.user);
+    return res.data;
   };
 
   /* ---------------- LOGOUT ---------------- */
-  const logout = async () => {
-    await adminApi.post("/auth/logout");
-    setUser(null);
+  const logout = () => {
+    localStorage.removeItem("admin_token");
     localStorage.removeItem("admin_user");
+    setUser(null);
   };
 
   return (

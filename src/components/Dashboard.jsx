@@ -1,22 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
-import {
-  Menu,
-  X,
-  ShoppingBag,
-  LogOut,
-  Bell,
-  Search,
-  ChevronDown,
-  Plus,
-  List,
-  Users,
-} from "lucide-react";
+import { Menu, X, ShoppingBag, LogOut, Plus, List, Users } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
-// import axios from "axios";
 
 export default function Dashboard() {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
@@ -31,79 +19,69 @@ export default function Dashboard() {
     }
   }, [user, navigate]);
 
-  // const [notificationCount, setNotificationCount] = useState(0);
-
-  // const fetchNotifications = async () => {
-  //   try {
-  //     const res = await axios.get(
-  //       "http://localhost:5000/api/orders/notification-count",
-  //     );
-  //     if (res.data.success) {
-  //       setNotificationCount(res.data.count);
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   fetchNotifications();
-
-  //   const interval = setInterval(() => {
-  //     fetchNotifications();
-  //   }, 5000);
-
-  //   return () => clearInterval(interval);
-  // }, []);
-
   return (
-    <div className="flex h-screen bg-gray-50">
-      {/* Sidebar */}
+    <div className="h-screen w-full overflow-hidden bg-gray-50 flex">
+      {/* MOBILE OVERLAY */}
+      {sidebarOpen && (
+        <div
+          onClick={() => setSidebarOpen(false)}
+          className="fixed inset-0 bg-black/40 z-30 lg:hidden"
+        />
+      )}
+
+      {/* SIDEBAR */}
       <aside
-        className={`${
-          sidebarOpen ? "w-64" : "w-20"
-        } bg-linear-to-b from-orange-600 to-red-700 text-white transition-all duration-300 flex flex-col`}
+        className={`
+          fixed lg:static z-40
+          h-full
+          bg-gradient-to-b from-orange-600 to-red-700 text-white
+          transition-all duration-300
+          ${sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
+          w-64 lg:w-64
+          flex flex-col
+        `}
       >
-        {/* Header */}
+        {/* SIDEBAR HEADER */}
         <div className="p-4 flex items-center justify-between border-b border-orange-500">
-          {sidebarOpen && (
-            <div className="flex items-center space-x-2">
-              <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center overflow-hidden">
-                <img
-                  src="/logo.png"
-                  alt="Spice Drama"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div>
-                <h1 className="font-bold text-lg">Spice Drama</h1>
-                <p className="text-xs text-orange-200">Admin Panel</p>
-              </div>
+          <div className="flex items-center gap-2">
+            <div className="w-10 h-10 bg-white rounded-lg overflow-hidden">
+              <img
+                src="/logo.png"
+                alt="Spice Drama"
+                className="w-full h-full object-cover"
+              />
             </div>
-          )}
+            <div>
+              <h1 className="font-bold text-lg">Spice Drama</h1>
+              <p className="text-xs text-orange-200">Admin Panel</p>
+            </div>
+          </div>
+
           <button
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="p-2 hover:bg-orange-500 rounded-lg"
+            onClick={() => setSidebarOpen(false)}
+            className="p-2 hover:bg-orange-500 rounded-lg lg:hidden"
           >
-            {sidebarOpen ? <X /> : <Menu />}
+            <X />
           </button>
         </div>
 
-        {/* Navigation */}
+        {/* NAV */}
         <nav className="flex-1 p-4 space-y-2">
           {["admin", "editor"].includes(user?.role) && (
             <NavLink
               to="/add"
               className={({ isActive }) =>
-                `flex items-center p-3 rounded-lg transition ${
+                `flex items-center gap-3 p-3 rounded-lg transition
+                ${
                   isActive
                     ? "bg-white text-orange-600 shadow"
                     : "hover:bg-orange-500"
                 }`
               }
+              onClick={() => setSidebarOpen(false)}
             >
-              <Plus className="w-5 h-5 mr-3" />
-              {sidebarOpen && "Add Items"}
+              <Plus size={20} />
+              Add Items
             </NavLink>
           )}
 
@@ -111,99 +89,99 @@ export default function Dashboard() {
             <NavLink
               to="/list"
               className={({ isActive }) =>
-                `flex items-center p-3 rounded-lg transition ${
+                `flex items-center gap-3 p-3 rounded-lg transition
+                ${
                   isActive
                     ? "bg-white text-orange-600 shadow"
                     : "hover:bg-orange-500"
                 }`
               }
+              onClick={() => setSidebarOpen(false)}
             >
-              <List className="w-5 h-5 mr-3" />
-              {sidebarOpen && "List Items"}
+              <List size={20} />
+              List Items
             </NavLink>
           )}
 
           <NavLink
             to="/orders"
             className={({ isActive }) =>
-              `flex items-center p-3 rounded-lg transition ${
+              `flex items-center gap-3 p-3 rounded-lg transition
+              ${
                 isActive
                   ? "bg-white text-orange-600 shadow"
                   : "hover:bg-orange-500"
               }`
             }
+            onClick={() => setSidebarOpen(false)}
           >
-            <ShoppingBag className="w-5 h-5 mr-3" />
-            {sidebarOpen && "Orders"}
+            <ShoppingBag size={20} />
+            Orders
           </NavLink>
-          {/* User Management - Admin Only */}
+
           {user?.role === "admin" && (
             <NavLink
               to="/users"
               className={({ isActive }) =>
-                `flex items-center p-3 rounded-lg transition ${
+                `flex items-center gap-3 p-3 rounded-lg transition
+                ${
                   isActive
                     ? "bg-white text-orange-600 shadow"
                     : "hover:bg-orange-500"
                 }`
               }
+              onClick={() => setSidebarOpen(false)}
             >
-              <Users className="w-5 h-5 mr-3" />
-              {sidebarOpen && "Manage Users"}
+              <Users size={20} />
+              Manage Users
             </NavLink>
           )}
         </nav>
 
-        {/* Footer */}
+        {/* FOOTER */}
         <div className="p-4 border-t border-orange-500">
           <button
             onClick={handleLogout}
-            className="w-full flex items-center justify-center p-3 hover:bg-orange-500 rounded-lg cursor-pointer"
+            className="w-full flex items-center justify-center gap-2 p-3 hover:bg-orange-500 rounded-lg"
           >
-            <LogOut className="w-5 h-5 mr-2" />
-            {sidebarOpen && "Logout"}
+            <LogOut size={18} />
+            Logout
           </button>
         </div>
       </aside>
 
-      {/* Main Area */}
-      <div className="flex-1 flex flex-col">
-        {/* Top Navbar */}
-        <header className="bg-white shadow border-b">
-          <div className="flex justify-between items-center px-6 py-4">
-            <div className="relative w-1/2"></div>
+      {/* MAIN CONTENT */}
+      <div className="flex-1 min-w-0 flex flex-col">
+        {/* TOP BAR */}
+        <header className="bg-white shadow border-b z-20">
+          <div className="flex items-center justify-between px-4 sm:px-6 py-3">
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="p-2 hover:bg-gray-100 rounded-lg lg:hidden"
+            >
+              <Menu />
+            </button>
 
-            <div className="flex items-center space-x-4">
-              {/* Notification Bell */}
-              {/* <button className="relative hover:text-orange-600 transition">
-                <Bell />
-                {notificationCount > 0 && (
-                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full text-xs text-white flex items-center justify-center font-semibold">
-                    {notificationCount}
-                  </span>
-                )}
-              </button> */}
-
-              {/* User Profile - Shows logged in user */}
-              <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 rounded-full flex items-center justify-center text-white font-semibold">
-                  <img src="profile.png" className="h-7 w-7" alt="" />
-                </div>
-                <div className="hidden md:block">
-                  <p className="text-sm font-medium text-gray-800">
-                    {user?.username || "Admin"}
-                  </p>
-                  <p className="text-xs text-gray-500 capitalize">
-                    {user?.role || "admin"}
-                  </p>
-                </div>
+            <div className="flex items-center gap-3">
+              <div className="hidden sm:block text-right">
+                <p className="text-sm font-medium text-gray-800">
+                  {user?.username || "Admin"}
+                </p>
+                <p className="text-xs text-gray-500 capitalize">
+                  {user?.role || "admin"}
+                </p>
               </div>
+              <img
+                src="/profile.png"
+                className="h-8 w-8 rounded-full"
+                alt="profile"
+              />
             </div>
           </div>
         </header>
 
-        {/* Pages Render Here */}
-        <main className="flex-1 overflow-y-auto p-6">
+        {/* PAGE CONTENT */}
+        <main className="flex-1 min-w-0 overflow-y-auto">
           <Outlet />
         </main>
       </div>

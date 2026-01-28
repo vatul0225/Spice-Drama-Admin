@@ -1,5 +1,6 @@
 import express from "express";
 import multer from "multer";
+import { isAuthenticated, hasRole } from "../middleware/auth.js";
 import {
   addFood,
   listFood,
@@ -10,7 +11,7 @@ import {
 
 const foodRouter = express.Router();
 
-// Image store engine
+/* ---------------- MULTER CONFIG ---------------- */
 const storage = multer.diskStorage({
   destination: "uploads",
   filename: (req, file, cb) => {
@@ -20,15 +21,38 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-// Routes
-foodRouter.post("/add", upload.single("image"), addFood);
-foodRouter.get("/list", listFood);
-foodRouter.post("/remove", removeFood);
+/* ---------------- ROUTES ---------------- */
 
-// GET SINGLE FOOD (FOR EDIT)
-foodRouter.get("/single/:id", getSingleFood);
+// ✅ ADD FOOD (admin & super_admin)
+foodRouter.post(
+  "/add",
+  isAuthenticated,
+  hasRole("super_admin", "admin"),
+  upload.single("image"),
+  addFood,
+);
 
-// UPDATE FOOD (EDIT MODE)
-foodRouter.put("/update/:id", upload.single("image"), updateFood);
+// ✅ LIST FOOD (any authenticated admin)
+foodRouter.get("/list", isAuthenticated, listFood);
+
+// ✅ REMOVE FOOD (admin & super_admin)
+foodRouter.post(
+  "/remove",
+  isAuthenticated,
+  hasRole("super_admin", "admin"),
+  removeFood,
+);
+
+// ✅ GET SINGLE FOOD (for edit)
+foodRouter.get("/single/:id", isAuthenticated, getSingleFood);
+
+// ✅ UPDATE FOOD (admin & super_admin)
+foodRouter.put(
+  "/update/:id",
+  isAuthenticated,
+  hasRole("super_admin", "admin"),
+  upload.single("image"),
+  updateFood,
+);
 
 export default foodRouter;

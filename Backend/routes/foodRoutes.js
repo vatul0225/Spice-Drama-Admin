@@ -1,5 +1,5 @@
 import express from "express";
-import { isAuthenticated, hasRole } from "../middleware/auth.js";
+import { isAuthenticated, hasRole } from "../middlewares/auth.js";
 import upload from "../middlewares/upload.js"; // 🔥 Cloudinary + Multer
 import {
   addFood,

@@ -4,18 +4,11 @@ import { useAuth } from "../context/AuthContext";
 const ProtectedRoute = ({ children, requiredRole }) => {
   const { user, loading } = useAuth();
 
-  // ⏳ Wait for auth check
+  // ⏳ Wait until auth is resolved
   if (loading) {
     return (
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-        }}
-      >
-        <div>Loading...</div>
+      <div className="h-screen flex items-center justify-center">
+        Loading...
       </div>
     );
   }
@@ -25,9 +18,9 @@ const ProtectedRoute = ({ children, requiredRole }) => {
     return <Navigate to="/login" replace />;
   }
 
-  // 🚫 Role not allowed
-  if (requiredRole && user.role !== requiredRole && user.role !== "admin") {
-    return <Navigate to="/" replace />; // ✅ FIX HERE
+  // 🚫 Role based protection (JWT simple rule)
+  if (requiredRole && user.role !== requiredRole) {
+    return <Navigate to="/" replace />;
   }
 
   return children;

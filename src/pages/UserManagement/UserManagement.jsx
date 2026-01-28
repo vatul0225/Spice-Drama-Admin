@@ -27,18 +27,20 @@ export default function UserManagement() {
     fetchUsers();
   }, []);
 
+  /* ---------------- FETCH USERS ---------------- */
   const fetchUsers = async () => {
     try {
       setLoading(true);
       const res = await adminApi.get("/auth/users");
       setUsers(res.data.users || []);
-    } catch {
+    } catch (err) {
       showMessage("error", "Failed to fetch users");
     } finally {
       setLoading(false);
     }
   };
 
+  /* ---------------- CREATE USER ---------------- */
   const handleCreateUser = async (e) => {
     e.preventDefault();
     try {
@@ -52,8 +54,9 @@ export default function UserManagement() {
     }
   };
 
+  /* ---------------- DELETE USER ---------------- */
   const handleDeleteUser = async (id) => {
-    if (!window.confirm("Delete this user?")) return;
+    if (!window.confirm("Are you sure you want to delete this user?")) return;
     try {
       await adminApi.delete(`/auth/users/${id}`);
       fetchUsers();
@@ -65,7 +68,7 @@ export default function UserManagement() {
 
   const showMessage = (type, text) => {
     setMessage({ type, text });
-    setTimeout(() => setMessage({ type: "", text: "" }), 3000);
+    setTimeout(() => setMessage({ type: "", text: "" }), 4000);
   };
 
   const roleStyles = {
@@ -81,15 +84,13 @@ export default function UserManagement() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-3 sm:px-6 py-6 space-y-6">
+    <div className="max-w-7xl mx-auto px-3 sm:px-5 py-6 space-y-6">
       {/* HEADER */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">
-            User Management
-          </h1>
+          <h1 className="text-2xl font-bold text-gray-800">User Management</h1>
           <p className="text-sm text-gray-500">
-            Manage admin panel users & roles
+            Manage admin panel users and permissions
           </p>
         </div>
 
@@ -97,12 +98,12 @@ export default function UserManagement() {
           onClick={() => setShowForm(!showForm)}
           className="flex items-center justify-center gap-2 
                      bg-orange-500 text-white 
-                     px-5 py-2.5 rounded-lg 
+                     px-4 py-2 rounded-lg 
                      hover:bg-orange-600 transition
                      w-full sm:w-auto"
         >
           {showForm ? <X size={18} /> : <UserPlus size={18} />}
-          {showForm ? "Close" : "Add User"}
+          {showForm ? "Close Form" : "Add User"}
         </button>
       </div>
 
@@ -115,129 +116,129 @@ export default function UserManagement() {
               : "bg-red-50 text-red-700"
           }`}
         >
-          {message.type === "success" ? <Check size={18} /> : <AlertCircle size={18} />}
+          {message.type === "success" ? (
+            <Check size={18} />
+          ) : (
+            <AlertCircle size={18} />
+          )}
           {message.text}
         </div>
       )}
 
       {/* ADD USER FORM */}
       {showForm && (
-        <div className="bg-white rounded-xl shadow p-5 max-w-lg">
-          <h2 className="text-lg font-semibold mb-4">Create New User</h2>
+        <div className="bg-white rounded-xl shadow p-5 w-full sm:max-w-lg">
+          <h2 className="font-semibold text-lg mb-4">Create New User</h2>
 
           <form onSubmit={handleCreateUser} className="space-y-3">
             <input
+              type="text"
               placeholder="Username"
-              className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-orange-400 outline-none"
               value={newUser.username}
               onChange={(e) =>
                 setNewUser({ ...newUser, username: e.target.value })
               }
+              className="w-full border rounded-lg px-3 py-3 sm:py-2 
+                         focus:ring-2 focus:ring-orange-400 outline-none"
               required
             />
+
             <input
-              placeholder="Email"
               type="email"
-              className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-orange-400 outline-none"
+              placeholder="Email"
               value={newUser.email}
               onChange={(e) =>
                 setNewUser({ ...newUser, email: e.target.value })
               }
+              className="w-full border rounded-lg px-3 py-3 sm:py-2 
+                         focus:ring-2 focus:ring-orange-400 outline-none"
               required
             />
+
             <input
-              placeholder="Password"
               type="password"
-              className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-orange-400 outline-none"
+              placeholder="Password"
               value={newUser.password}
               onChange={(e) =>
                 setNewUser({ ...newUser, password: e.target.value })
               }
+              className="w-full border rounded-lg px-3 py-3 sm:py-2 
+                         focus:ring-2 focus:ring-orange-400 outline-none"
               required
             />
+
             <select
-              className="w-full px-4 py-3 border rounded-lg"
               value={newUser.role}
-              onChange={(e) =>
-                setNewUser({ ...newUser, role: e.target.value })
-              }
+              onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
+              className="w-full border rounded-lg px-3 py-3 sm:py-2"
             >
               <option value="admin">Admin</option>
               <option value="editor">Editor</option>
               <option value="viewer">Viewer</option>
             </select>
 
-            <button className="w-full bg-green-600 hover:bg-green-700 text-white py-2.5 rounded-lg">
+            <button
+              type="submit"
+              className="w-full bg-green-600 hover:bg-green-700 
+                         text-white py-2 rounded-lg transition"
+            >
               Create User
             </button>
           </form>
         </div>
       )}
 
-      {/* MOBILE USER CARDS */}
-      <div className="grid gap-4 md:hidden">
-        {users.map((u) => (
-          <div
-            key={u._id}
-            className="bg-white rounded-xl shadow p-4 space-y-2"
-          >
-            <h3 className="font-semibold text-lg">{u.username}</h3>
-            <p className="text-sm text-gray-500">{u.email}</p>
-
-            <span
-              className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium ${roleStyles[u.role]}`}
-            >
-              {roleIcons[u.role]} {u.role}
-            </span>
-
-            <button
-              onClick={() => handleDeleteUser(u._id)}
-              className="mt-2 text-sm text-red-600 flex items-center gap-1"
-            >
-              <Trash2 size={16} /> Delete User
-            </button>
-          </div>
-        ))}
-      </div>
-
-      {/* DESKTOP TABLE */}
-      <div className="hidden md:block bg-white rounded-xl shadow overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead className="bg-gray-50 text-gray-600">
-            <tr>
-              <th className="px-5 py-3 text-left">User</th>
-              <th className="px-5 py-3 text-left">Email</th>
-              <th className="px-5 py-3 text-left">Role</th>
-              <th className="px-5 py-3 text-center">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map((u) => (
-              <tr
-                key={u._id}
-                className="border-t hover:bg-gray-50 transition"
-              >
-                <td className="px-5 py-3 font-medium">{u.username}</td>
-                <td className="px-5 py-3 text-gray-600">{u.email}</td>
-                <td className="px-5 py-3">
-                  <span
-                    className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium ${roleStyles[u.role]}`}
-                  >
-                    {roleIcons[u.role]} {u.role}
-                  </span>
-                </td>
-                <td className="px-5 py-3 text-center">
-                  <button
-                    onClick={() => handleDeleteUser(u._id)}
-                    className="text-red-500 hover:text-red-700"
-                  >
-                    <Trash2 size={18} />
-                  </button>
-                </td>
+      {/* USERS TABLE */}
+      <div className="bg-white rounded-xl shadow overflow-x-auto">
+        {loading ? (
+          <p className="p-6 text-gray-500">Loading users...</p>
+        ) : users.length === 0 ? (
+          <p className="p-6 text-gray-500">No users found</p>
+        ) : (
+          <table className="w-full text-xs sm:text-sm">
+            <thead className="bg-gray-50 text-gray-600">
+              <tr>
+                <th className="px-4 sm:px-5 py-3 text-left">Username</th>
+                <th className="px-4 sm:px-5 py-3 text-left">Email</th>
+                <th className="px-4 sm:px-5 py-3 text-left">Role</th>
+                <th className="px-4 sm:px-5 py-3 text-center">Action</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+
+            <tbody>
+              {users.map((u) => (
+                <tr
+                  key={u._id}
+                  className="border-t hover:bg-gray-50 transition"
+                >
+                  <td className="px-4 sm:px-5 py-3 font-medium">
+                    {u.username}
+                  </td>
+                  <td className="px-4 sm:px-5 py-3 text-gray-600">{u.email}</td>
+                  <td className="px-4 sm:px-5 py-3">
+                    <span
+                      className={`inline-flex items-center gap-1 
+                      px-3 py-1 rounded-full 
+                      text-xs font-medium capitalize whitespace-nowrap
+                      ${roleStyles[u.role]}`}
+                    >
+                      {roleIcons[u.role]}
+                      {u.role}
+                    </span>
+                  </td>
+                  <td className="px-4 sm:px-5 py-3 text-center">
+                    <button
+                      onClick={() => handleDeleteUser(u._id)}
+                      className="text-red-500 hover:text-red-700 transition"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
     </div>
   );

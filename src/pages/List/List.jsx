@@ -107,7 +107,7 @@ export default function List() {
               >
                 <div className="flex gap-3">
                   <img
-                    src={`${import.meta.env.VITE_USER_API}/images/${item.image}`}
+                    src={item.image}
                     alt={item.name}
                     className="w-16 h-16 rounded-lg object-cover flex-shrink-0"
                   />
@@ -169,7 +169,7 @@ export default function List() {
                 <tr key={item._id} className="border-t">
                   <td className="px-4 py-3 flex items-center gap-3">
                     <img
-                      src={`${import.meta.env.VITE_USER_API}/images/${item.image}`}
+                      src={item.image}
                       className="w-10 h-10 rounded object-cover"
                     />
                     {item.name}
@@ -233,10 +233,7 @@ export default function List() {
                 <X />
               </button>
 
-              <img
-                src={`${import.meta.env.VITE_USER_API}/images/${viewItem.image}`}
-                className="w-full h-48 object-cover"
-              />
+              <img src={viewItem.image} className="w-full h-48 object-cover" />
 
               <div className="p-4 space-y-2">
                 <h2 className="text-lg font-bold">{viewItem.name}</h2>

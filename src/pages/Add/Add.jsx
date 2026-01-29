@@ -126,7 +126,7 @@ export default function AddItems() {
                   />
                 ) : oldImage ? (
                   <img
-                    src={`${import.meta.env.VITE_USER_API}/images/${oldImage}`}
+                    src={oldImage}
                     className="w-full h-full object-cover"
                   />
                 ) : (

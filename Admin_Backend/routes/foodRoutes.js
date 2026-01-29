@@ -11,39 +11,45 @@ import {
 
 const foodRouter = express.Router();
 
-// Image store engine
-const storage = multer.diskStorage({
-  destination: "uploads",
-  filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`);
-  },
+/* ================= MULTER (MEMORY STORAGE) ================= */
+// ❌ diskStorage REMOVED
+// ❌ uploads folder REMOVED
+const upload = multer({
+  storage: multer.memoryStorage(),
 });
 
-const upload = multer({ storage });
+/* ================= ROUTES ================= */
 
-// Add Food - Only super_admin and admin can add
+// ADD FOOD
 foodRouter.post(
   "/add",
+  isAuthenticated,
   hasRole("super_admin", "admin"),
   upload.single("image"),
-  addFood,
+  addFood
 );
 
-// List Food - Any authenticated admin can view
+// LIST FOOD
 foodRouter.get("/list", isAuthenticated, listFood);
 
-// Remove Food - Only super_admin and admin can remove
-foodRouter.post("/remove", hasRole("super_admin", "admin"), removeFood);
+// REMOVE FOOD
+foodRouter.post(
+  "/remove",
+  isAuthenticated,
+  hasRole("super_admin", "admin"),
+  removeFood
+);
 
-// Get Single Food - Any authenticated admin can view (for edit form)
+// GET SINGLE FOOD
 foodRouter.get("/single/:id", isAuthenticated, getSingleFood);
 
-// Update Food - Only super_admin and admin can update
+// UPDATE FOOD
 foodRouter.put(
   "/update/:id",
+  isAuthenticated,
   hasRole("super_admin", "admin"),
   upload.single("image"),
-  updateFood,
+  updateFood
 );
 
 export default foodRouter;

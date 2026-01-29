@@ -1,30 +1,26 @@
 import jwt from "jsonwebtoken";
+import adminModel from "../models/adminModel.js";
 
-const authMiddleware = async (req, res, next) => {
+export const isAuthenticated = async (req, res, next) => {
   try {
-    // Read token from Authorization header
-    const authHeader = req.headers.authorization;
+    const auth = req.headers.authorization;
+    if (!auth) return res.status(401).json({ message: "No token" });
 
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return res.status(401).json({
-        success: false,
-        message: "Not Authorized. Login again",
-      });
-    }
+    const token = auth.split(" ")[1];
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    const token = authHeader.split(" ")[1];
-
-    const token_decode = jwt.verify(token, process.env.JWT_SECRET);
-
-    req.user = token_decode;
+    req.user = decoded;
     next();
-  } catch (error) {
-    console.log("AUTH ERROR", error);
-    return res.status(401).json({
-      success: false,
-      message: "Invalid or expired token",
-    });
+  } catch {
+    return res.status(401).json({ message: "Invalid token" });
   }
 };
 
-export default authMiddleware;
+export const hasRole = (...roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.role)) {
+      return res.status(403).json({ message: "Access denied" });
+    }
+    next();
+  };
+};

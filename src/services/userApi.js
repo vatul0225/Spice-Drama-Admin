@@ -6,17 +6,13 @@ const userApi = axios.create({
 
 userApi.interceptors.request.use(
   (config) => {
-    const token =
-      localStorage.getItem("token") ||
-      localStorage.getItem("admin_token"); // ✅ FIX
-
+    const token = localStorage.getItem("token"); // 👤 ONLY USER TOKEN
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-
     return config;
   },
-  (error) => Promise.reject(error),
+  (error) => Promise.reject(error)
 );
 
 export default userApi;

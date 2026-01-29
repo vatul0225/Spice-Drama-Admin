@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Edit, Trash2, Eye, PlusCircle } from "lucide-react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import userApi from "../../services/userApi"; // ✅ FIXED
+import adminApi from "../../services/adminApi"; // ✅ CORRECT
 
 export default function List() {
   const [list, setList] = useState([]);
@@ -12,7 +12,7 @@ export default function List() {
 
   const fetchList = async () => {
     try {
-      const res = await userApi.get("/food/list"); // ✅
+      const res = await adminApi.get("/food/list"); // ✅
       if (res.data.success) setList(res.data.data);
     } catch {
       toast.error("Failed to load food list");
@@ -22,7 +22,7 @@ export default function List() {
   const removeItem = async (id) => {
     if (!window.confirm("Delete item?")) return;
     try {
-      const res = await userApi.post("/food/remove", { id }); // ✅
+      const res = await adminApi.post("/food/remove", { id }); // ✅
       if (res.data.success) {
         toast.success("Item removed");
         fetchList();
@@ -69,8 +69,7 @@ export default function List() {
               src={item.image}
               className="w-20 h-20 object-cover rounded"
               onError={(e) =>
-                (e.target.src =
-                  "https://via.placeholder.com/150?text=No+Image")
+                (e.target.src = "https://via.placeholder.com/150?text=No+Image")
               }
             />
             <div className="flex-1">

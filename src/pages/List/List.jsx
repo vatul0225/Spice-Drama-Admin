@@ -3,7 +3,12 @@ import { Edit, Trash2, Eye, PlusCircle, Search, X } from "lucide-react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import userApi from "../../services/userApi";
+
+// ❌ userApi hata diya
+// import userApi from "../../services/userApi";
+
+// ✅ adminApi use hoga (DELETE ke liye)
+import adminApi from "../../services/adminApi";
 
 export default function List() {
   const [list, setList] = useState([]);
@@ -15,7 +20,7 @@ export default function List() {
   /* ---------------- FETCH LIST ---------------- */
   const fetchList = async () => {
     try {
-      const response = await userApi.get("/food/list");
+      const response = await adminApi.get("/food/list");
       if (response.data.success) {
         setList(response.data.data);
       }
@@ -24,24 +29,26 @@ export default function List() {
     }
   };
 
-  /* ---------------- REMOVE ITEM ---------------- */
+  /* ---------------- REMOVE ITEM (FIXED) ---------------- */
   const remove = async (foodId) => {
     if (!window.confirm("Delete this item?")) return;
+
     try {
-      const response = await userApi.post("/food/remove", { id: foodId });
+      const response = await adminApi.post("/food/remove", { id: foodId });
+
       if (response.data.success) {
         toast.success(response.data.message);
         fetchList();
       } else {
-        toast.error("Error occurred");
+        toast.error(response.data.message || "Delete failed");
       }
-    } catch {
+    } catch (error) {
+      console.error("DELETE ERROR:", error);
       toast.error("Failed to remove item");
     }
   };
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchList();
   }, []);
 
@@ -50,7 +57,6 @@ export default function List() {
   );
 
   return (
-    /* THIS IS THE CRITICAL FIX */
     <div className="h-full w-full min-w-0 overflow-y-auto overflow-x-hidden">
       <div className="space-y-4 sm:space-y-5 px-3 sm:px-4 lg:px-6 py-4 pb-24">
         {/* HEADER */}
@@ -203,7 +209,6 @@ export default function List() {
           </table>
         </div>
 
-        {/* COUNT */}
         <div className="text-center text-xs text-gray-500">
           Showing {filteredItems.length} of {list.length} items
         </div>

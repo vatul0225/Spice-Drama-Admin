@@ -2,6 +2,9 @@ import foodModel from "../models/foodModel.js";
 
 /* ================= ADD FOOD ================= */
 const addFood = async (req, res) => {
+  console.log("BODY 👉", req.body);
+  console.log("FILE 👉", req.file);
+
   try {
     const { name, description, price, category } = req.body;
 

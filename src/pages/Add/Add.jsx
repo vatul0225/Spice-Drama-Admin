@@ -83,7 +83,7 @@ export default function AddItems() {
           id ? "Item updated successfully" : "Item added successfully",
         );
 
-        // ✅ CORRECT REDIRECT
+        // CORRECT REDIRECT
         navigate("/list");
       } else {
         toast.error(response.data.message || "Operation failed");

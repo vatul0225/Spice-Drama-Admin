@@ -12,8 +12,6 @@ import {
 const foodRouter = express.Router();
 
 /* ================= MULTER (MEMORY STORAGE) ================= */
-// ❌ diskStorage REMOVED
-// ❌ uploads folder REMOVED
 const upload = multer({
   storage: multer.memoryStorage(),
 });

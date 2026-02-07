@@ -41,7 +41,6 @@ export default function List() {
   };
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchList();
   }, []);
 
@@ -50,7 +49,6 @@ export default function List() {
   );
 
   return (
-    /* THIS IS THE CRITICAL FIX */
     <div className="h-full w-full min-w-0 overflow-y-auto overflow-x-hidden">
       <div className="space-y-4 sm:space-y-5 px-3 sm:px-4 lg:px-6 py-4 pb-24">
         {/* HEADER */}
@@ -122,6 +120,20 @@ export default function List() {
                     <p className="font-bold text-orange-600 mt-1">
                       ₹{item.price}
                     </p>
+
+                    {/* ✅ QUANTITY */}
+                    <p className="text-xs mt-1 font-medium text-gray-600">
+                      Quantity:{" "}
+                      <span
+                        className={
+                          item.quantity === 0
+                            ? "text-red-500"
+                            : "text-green-600"
+                        }
+                      >
+                        {item.quantity}
+                      </span>
+                    </p>
                   </div>
                 </div>
 
@@ -161,6 +173,7 @@ export default function List() {
                 <th className="px-4 py-3 text-left">Item</th>
                 <th className="px-4 py-3 text-left">Category</th>
                 <th className="px-4 py-3 text-right">Price</th>
+                <th className="px-4 py-3 text-center">Quantity</th>
                 <th className="px-4 py-3 text-center">Actions</th>
               </tr>
             </thead>
@@ -178,6 +191,16 @@ export default function List() {
                   <td className="px-4 py-3 text-right font-semibold text-orange-600">
                     ₹{item.price}
                   </td>
+
+                  {/* ✅ QUANTITY */}
+                  <td
+                    className={`px-4 py-3 text-center font-semibold ${
+                      item.quantity === 0 ? "text-red-500" : "text-green-600"
+                    }`}
+                  >
+                    {item.quantity}
+                  </td>
+
                   <td className="px-4 py-3 text-center">
                     <div className="flex justify-center gap-2">
                       <Eye
@@ -238,10 +261,20 @@ export default function List() {
               <div className="p-4 space-y-2">
                 <h2 className="text-lg font-bold">{viewItem.name}</h2>
                 <p className="text-sm text-gray-600">{viewItem.description}</p>
+
                 <div className="flex justify-between font-semibold pt-2">
                   <span>{viewItem.category}</span>
                   <span className="text-orange-600">₹{viewItem.price}</span>
                 </div>
+
+                {/* ✅ QUANTITY */}
+                <p
+                  className={`text-sm font-semibold ${
+                    viewItem.quantity === 0 ? "text-red-500" : "text-green-600"
+                  }`}
+                >
+                  Available Quantity: {viewItem.quantity}
+                </p>
               </div>
             </motion.div>
           </motion.div>

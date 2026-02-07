@@ -36,7 +36,12 @@ export default function UserManagement() {
       const res = await adminApi.get("/auth/users");
       setUsers(res.data.users || []);
     } catch (err) {
-      showMessage("error", "Failed to fetch users");
+      showMessage(
+        "error",
+        err.response?.data?.error ||
+          err.response?.data?.message ||
+          "Unauthorized or failed to fetch users",
+      );
     } finally {
       setLoading(false);
     }
@@ -51,8 +56,13 @@ export default function UserManagement() {
       setShowForm(false);
       fetchUsers();
       showMessage("success", "User created successfully");
-    } catch {
-      showMessage("error", "Failed to create user");
+    } catch (err) {
+      showMessage(
+        "error",
+        err.response?.data?.error ||
+          err.response?.data?.message ||
+          "Failed to create user",
+      );
     }
   };
 
@@ -63,8 +73,13 @@ export default function UserManagement() {
       await adminApi.delete(`/auth/users/${id}`);
       fetchUsers();
       showMessage("success", "User deleted successfully");
-    } catch {
-      showMessage("error", "Failed to delete user");
+    } catch (err) {
+      showMessage(
+        "error",
+        err.response?.data?.error ||
+          err.response?.data?.message ||
+          "Failed to delete user",
+      );
     }
   };
 

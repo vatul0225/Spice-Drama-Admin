@@ -10,17 +10,33 @@ import {
 
 const adminUserRouter = express.Router();
 
-// List all users - Any authenticated admin can view
-adminUserRouter.get("/list", isAuthenticated, listUsers);
+// ✅ List all users (ADMIN only)
+adminUserRouter.get("/list", isAuthenticated, hasRole("admin"), listUsers);
 
-// Get single user details
-adminUserRouter.get("/details/:id", isAuthenticated, getUserDetails);
+// ✅ Get single user
+adminUserRouter.get(
+  "/details/:id",
+  isAuthenticated,
+  hasRole("admin"),
+  getUserDetails,
+);
 
-// Delete user - Only super_admin can delete
-adminUserRouter.delete("/delete/:id", hasRole("super_admin"), deleteUser);
+// ✅ Delete user (ADMIN only)
+adminUserRouter.delete(
+  "/delete/:id",
+  isAuthenticated,
+  hasRole("admin"),
+  deleteUser,
+);
 
-// Ban/Unban user - super_admin and admin can ban
-adminUserRouter.post("/ban/:id", hasRole("super_admin", "admin"), banUser);
-adminUserRouter.post("/unban/:id", hasRole("super_admin", "admin"), unbanUser);
+// ✅ Ban / Unban (ADMIN only)
+adminUserRouter.post("/ban/:id", isAuthenticated, hasRole("admin"), banUser);
+
+adminUserRouter.post(
+  "/unban/:id",
+  isAuthenticated,
+  hasRole("admin"),
+  unbanUser,
+);
 
 export default adminUserRouter;

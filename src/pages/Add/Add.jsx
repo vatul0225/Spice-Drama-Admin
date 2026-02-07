@@ -181,13 +181,20 @@ export default function AddItems() {
                 <option value="">Select Category</option>
                 <option>Pizza</option>
                 <option>Burger</option>
-                <option>Roll</option>
+                <option>Rolls</option>
+                <option>Paneer</option>
+                <option>Veg Curries</option>
+                <option>Daal</option>
+                <option>Rice</option>
+                <option>Roti</option>
                 <option>Chicken</option>
                 <option>Egg</option>
                 <option>Fish</option>
-                <option>Paneer</option>
-                <option>Rice</option>
                 <option>Noodles</option>
+                <option>Maggie</option>
+                <option>Snacks</option>
+                <option>Desserts</option>
+                <option>Beverages</option>
               </select>
 
               {/* PRICE + QUANTITY */}

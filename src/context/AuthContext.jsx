@@ -1,64 +1,52 @@
 import { createContext, useState, useContext, useEffect } from "react";
-import userApi from "../services/userApi";
+import adminApi from "../services/adminApi";
 
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => {
+    const saved = localStorage.getItem("admin_user");
+    return saved ? JSON.parse(saved) : null;
+  });
+
   const [loading, setLoading] = useState(true);
 
-  /* ================= INIT AUTH ================= */
+  /* ---------------- INIT AUTH (JWT) ---------------- */
   useEffect(() => {
-    const initAuth = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        setLoading(false);
-        return;
-      }
+    const token = localStorage.getItem("admin_token");
+    const savedUser = localStorage.getItem("admin_user");
 
-      try {
-        const res = await userApi.get("/auth/me");
-        setUser(res.data.user);
-      } catch (err) {
-        localStorage.removeItem("token");
-        localStorage.removeItem("role");
-        setUser(null);
-      } finally {
-        setLoading(false);
-      }
-    };
+    if (token && savedUser) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setUser(JSON.parse(savedUser));
+    } else {
+      setUser(null);
+    }
 
-    initAuth();
+    setLoading(false);
   }, []);
 
-  /* ================= LOGIN ================= */
+  /* ---------------- LOGIN ---------------- */
   const login = async (credentials) => {
-    const res = await userApi.post("/auth/login", credentials);
+    const res = await adminApi.post("/auth/login", credentials);
 
-    // 🔥 SINGLE TOKEN FOR ALL ROLES
-    localStorage.setItem("token", res.data.token);
-    localStorage.setItem("role", res.data.user.role);
+    // SAVE JWT + USER
+    localStorage.setItem("admin_token", res.data.token);
+    localStorage.setItem("admin_user", JSON.stringify(res.data.user));
 
     setUser(res.data.user);
     return res.data;
   };
 
-  /* ================= LOGOUT ================= */
+  /* ---------------- LOGOUT ---------------- */
   const logout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("role");
+    localStorage.removeItem("admin_token");
+    localStorage.removeItem("admin_user");
     setUser(null);
   };
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        login,
-        logout,
-        loading,
-      }}
-    >
+    <AuthContext.Provider value={{ user, login, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );

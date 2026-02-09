@@ -6,7 +6,7 @@ import { protect, adminOnly } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-/* ---------------- LOGIN ---------------- */
+/* ================= LOGIN ================= */
 router.post("/login", async (req, res) => {
   const { username, password } = req.body;
 
@@ -36,33 +36,58 @@ router.post("/login", async (req, res) => {
   });
 });
 
-/* ---------------- ME ---------------- */
+/* ================= GET ME ================= */
 router.get("/me", protect, (req, res) => {
-  res.json({
-    user: req.user,
-  });
+  res.json({ user: req.user });
 });
 
-/* ---------------- USERS (ADMIN ONLY) ---------------- */
-router.get("/users", protect, adminOnly, async (req, res) => {
-  const users = await User.find().select("-password");
-  res.json({ users });
-});
-
+/* ================= CREATE USER (ADMIN) ================= */
 router.post("/users", protect, adminOnly, async (req, res) => {
   const { username, email, password, role } = req.body;
 
+  // ✅ validation
+  if (!username || !email || !password || !role) {
+    return res.status(400).json({ error: "All fields required" });
+  }
+
+  const exists = await User.findOne({
+    $or: [{ username }, { email }],
+  });
+
+  if (exists) {
+    return res.status(400).json({
+      error: "Username or Email already exists",
+    });
+  }
+
   const hashed = await bcrypt.hash(password, 10);
+
   const user = await User.create({
     username,
     email,
     password: hashed,
     role,
+    isActive: true,
   });
 
-  res.json({ success: true, user });
+  res.json({
+    success: true,
+    user: {
+      id: user._id,
+      username: user.username,
+      email: user.email,
+      role: user.role,
+    },
+  });
 });
 
+/* ================= LIST USERS ================= */
+router.get("/users", protect, adminOnly, async (req, res) => {
+  const users = await User.find().select("-password");
+  res.json({ users });
+});
+
+/* ================= DELETE USER ================= */
 router.delete("/users/:id", protect, adminOnly, async (req, res) => {
   await User.findByIdAndDelete(req.params.id);
   res.json({ success: true });

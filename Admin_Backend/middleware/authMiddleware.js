@@ -13,13 +13,12 @@ export const protect = async (req, res, next) => {
   }
 
   if (!token) {
-    return res.status(401).json({ error: "Not authorized, token missing" });
+    return res.status(401).json({ error: "Token missing" });
   }
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // 🔥 IMPORTANT: fetch fresh user from DB
     const user = await User.findById(decoded.id).select("-password");
 
     if (!user) {
@@ -27,20 +26,20 @@ export const protect = async (req, res, next) => {
     }
 
     if (user.isActive === false) {
-      return res.status(403).json({ error: "User is blocked" });
+      return res.status(403).json({ error: "User blocked" });
     }
 
-    req.user = user; // FULL USER OBJECT
+    req.user = user;
     next();
-  } catch (error) {
-    return res.status(401).json({ error: "Invalid or expired token" });
+  } catch (err) {
+    return res.status(401).json({ error: "Invalid token" });
   }
 };
 
 /* ================= ADMIN ONLY ================= */
 export const adminOnly = (req, res, next) => {
   if (req.user.role !== "admin") {
-    return res.status(403).json({ error: "Admin only access" });
+    return res.status(403).json({ error: "Admin access only" });
   }
   next();
 };

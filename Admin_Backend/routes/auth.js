@@ -31,6 +31,7 @@ router.post("/login", async (req, res) => {
     user: {
       id: user._id,
       username: user.username,
+      email: user.email,
       role: user.role,
     },
   });
@@ -45,7 +46,6 @@ router.get("/me", protect, (req, res) => {
 router.post("/users", protect, adminOnly, async (req, res) => {
   const { username, email, password, role } = req.body;
 
-  // ✅ validation
   if (!username || !email || !password || !role) {
     return res.status(400).json({ error: "All fields required" });
   }
@@ -55,9 +55,7 @@ router.post("/users", protect, adminOnly, async (req, res) => {
   });
 
   if (exists) {
-    return res.status(400).json({
-      error: "Username or Email already exists",
-    });
+    return res.status(400).json({ error: "Username or Email already exists" });
   }
 
   const hashed = await bcrypt.hash(password, 10);

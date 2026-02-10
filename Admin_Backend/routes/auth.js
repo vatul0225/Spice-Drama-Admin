@@ -8,33 +8,47 @@ const router = express.Router();
 
 /* ================= LOGIN ================= */
 router.post("/login", async (req, res) => {
-  const { username, password } = req.body;
+  try {
+    const { username, password } = req.body;
 
-  const user = await User.findOne({
-    $or: [{ username }, { email: username }],
-  });
+    if (!username || !password) {
+      return res.status(400).json({ error: "All fields required" });
+    }
 
-  if (!user) {
-    return res.status(401).json({ error: "Invalid credentials" });
+    const user = await User.findOne({
+      $or: [{ username }, { email: username }],
+    });
+
+    if (!user) {
+      return res.status(401).json({ error: "Invalid credentials" });
+    }
+
+    // Compare plain password with hashed password (DB)
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ error: "Invalid credentials" });
+    }
+
+    if (user.isActive === false) {
+      return res.status(403).json({ error: "User is blocked" });
+    }
+
+    const token = generateToken(user);
+
+    res.json({
+      success: true,
+      token,
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+      },
+    });
+  } catch (err) {
+    console.error("LOGIN ERROR:", err);
+    res.status(500).json({ error: "Server error" });
   }
-
-  const isMatch = await bcrypt.compare(password, user.password);
-  if (!isMatch) {
-    return res.status(401).json({ error: "Invalid credentials" });
-  }
-
-  const token = generateToken(user);
-
-  res.json({
-    success: true,
-    token,
-    user: {
-      id: user._id,
-      username: user.username,
-      email: user.email,
-      role: user.role,
-    },
-  });
 });
 
 /* ================= GET ME ================= */
@@ -42,53 +56,67 @@ router.get("/me", protect, (req, res) => {
   res.json({ user: req.user });
 });
 
-/* ================= CREATE USER (ADMIN) ================= */
+/* ================= CREATE USER (ADMIN ONLY) ================= */
 router.post("/users", protect, adminOnly, async (req, res) => {
-  const { username, email, password, role } = req.body;
+  try {
+    const { username, email, password, role } = req.body;
 
-  if (!username || !email || !password || !role) {
-    return res.status(400).json({ error: "All fields required" });
+    if (!username || !email || !password || !role) {
+      return res.status(400).json({ error: "All fields required" });
+    }
+
+    const exists = await User.findOne({
+      $or: [{ username }, { email }],
+    });
+
+    if (exists) {
+      return res
+        .status(400)
+        .json({ error: "Username or Email already exists" });
+    }
+
+    // ✅ DO NOT hash here (model will handle it)
+    const user = await User.create({
+      username,
+      email,
+      password, // plain password
+      role,
+      isActive: true,
+    });
+
+    res.status(201).json({
+      success: true,
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+      },
+    });
+  } catch (err) {
+    console.error("CREATE USER ERROR:", err);
+    res.status(500).json({ error: "Server error" });
   }
-
-  const exists = await User.findOne({
-    $or: [{ username }, { email }],
-  });
-
-  if (exists) {
-    return res.status(400).json({ error: "Username or Email already exists" });
-  }
-
-  const hashed = await bcrypt.hash(password, 10);
-
-  const user = await User.create({
-    username,
-    email,
-    password: hashed,
-    role,
-    isActive: true,
-  });
-
-  res.json({
-    success: true,
-    user: {
-      id: user._id,
-      username: user.username,
-      email: user.email,
-      role: user.role,
-    },
-  });
 });
 
-/* ================= LIST USERS ================= */
+/* ================= LIST USERS (ADMIN) ================= */
 router.get("/users", protect, adminOnly, async (req, res) => {
-  const users = await User.find().select("-password");
-  res.json({ users });
+  try {
+    const users = await User.find().select("-password");
+    res.json({ users });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch users" });
+  }
 });
 
-/* ================= DELETE USER ================= */
+/* ================= DELETE USER (ADMIN) ================= */
 router.delete("/users/:id", protect, adminOnly, async (req, res) => {
-  await User.findByIdAndDelete(req.params.id);
-  res.json({ success: true });
+  try {
+    await User.findByIdAndDelete(req.params.id);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to delete user" });
+  }
 });
 
 export default router;

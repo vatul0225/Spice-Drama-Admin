@@ -28,9 +28,13 @@ export const AuthProvider = ({ children }) => {
 
   /* ---------------- LOGIN ---------------- */
   const login = async (credentials) => {
-    const res = await adminApi.post("/auth/login", credentials);
+    const payload = {
+      email: credentials.username, // ✅ backend expects email
+      password: credentials.password,
+    };
 
-    // SAVE JWT + USER
+    const res = await adminApi.post("/auth/login", payload);
+
     localStorage.setItem("admin_token", res.data.token);
     localStorage.setItem("admin_user", JSON.stringify(res.data.user));
 

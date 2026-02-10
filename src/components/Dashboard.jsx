@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { NavLink, Outlet, useNavigate, useLocation } from "react-router-dom";
 import { Menu, X, ShoppingBag, LogOut, Plus, List, Users } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 
@@ -7,17 +7,19 @@ export default function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = async () => {
     await logout();
     navigate("/login");
   };
 
+  // Redirect viewer to orders only if on root path
   useEffect(() => {
-    if (user?.role === "viewer") {
-      navigate("/orders");
+    if (user?.role === "viewer" && location.pathname === "/") {
+      navigate("/orders", { replace: true });
     }
-  }, [user, navigate]);
+  }, [user, navigate, location.pathname]);
 
   return (
     <div className="h-screen w-full overflow-hidden bg-gray-50 flex">

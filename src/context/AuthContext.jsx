@@ -29,7 +29,8 @@ export const AuthProvider = ({ children }) => {
   /* ---------------- LOGIN ---------------- */
   const login = async (credentials) => {
     const payload = {
-      email: credentials.username, // ✅ backend expects email
+      email: credentials.username, // viewer / editor ke liye
+      username: credentials.username, // admin ke liye
       password: credentials.password,
     };
 

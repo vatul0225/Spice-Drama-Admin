@@ -1,18 +1,25 @@
 import { Navigate } from "react-router-dom";
-import { useContext } from "react";
-import { AuthContext } from "../context/AuthContext";
+import { useAuth } from "../context/AuthContext";
 
-const ProtectedRoute = ({ children }) => {
-  const { user } = useContext(AuthContext);
+const ProtectedRoute = ({ children, requiredRole }) => {
+  const { user, loading } = useAuth();
 
-  if (!user) {
-    return <Navigate to="/login" />;
+  if (loading) {
+    return (
+      <div className="h-screen flex items-center justify-center">
+        Loading...
+      </div>
+    );
   }
 
-  const allowedRoles = ["admin", "editor", "viewer"];
+  // Not logged in
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
 
-  if (!allowedRoles.includes(user.role)) {
-    return <Navigate to="/login" />;
+  // Role based protection (JWT simple rule)
+  if (requiredRole && user.role !== requiredRole) {
+    return <Navigate to="/" replace />;
   }
 
   return children;

@@ -28,14 +28,9 @@ export const AuthProvider = ({ children }) => {
 
   /* ---------------- LOGIN ---------------- */
   const login = async (credentials) => {
-    const payload = {
-      email: credentials.username, // viewer / editor ke liye
-      username: credentials.username, // admin ke liye
-      password: credentials.password,
-    };
+    const res = await adminApi.post("/auth/login", credentials);
 
-    const res = await adminApi.post("/auth/login", payload);
-
+    // SAVE JWT + USER
     localStorage.setItem("admin_token", res.data.token);
     localStorage.setItem("admin_user", JSON.stringify(res.data.user));
 

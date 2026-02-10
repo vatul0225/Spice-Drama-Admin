@@ -23,12 +23,6 @@ router.post("/login", async (req, res) => {
     return res.status(401).json({ error: "Invalid credentials" });
   }
 
-  // 🔥 ADD THIS (OPTION B)
-  const allowedRoles = ["admin", "editor", "viewer"];
-  if (!allowedRoles.includes(user.role)) {
-    return res.status(401).json({ error: "Unauthorized role" });
-  }
-
   const token = generateToken(user);
 
   res.json({

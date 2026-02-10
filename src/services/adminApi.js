@@ -1,15 +1,32 @@
 import axios from "axios";
 
-const adminApi = axios.create({
-  baseURL: `${import.meta.env.VITE_ADMIN_API}/api`,
+const api = axios.create({
+  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000/api",
 });
 
-adminApi.interceptors.request.use((config) => {
-  const token = localStorage.getItem("admin_token");
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+// Request interceptor
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+// Response interceptor
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      window.location.href = "/login";
+    }
+    return Promise.reject(error);
   }
-  return config;
-});
+);
 
-export default adminApi;
+export default api;

@@ -10,10 +10,10 @@ import {
 
 const adminUserRouter = express.Router();
 
-// ✅ List all users (ADMIN only)
+// List all users (ADMIN only)
 adminUserRouter.get("/list", isAuthenticated, hasRole("admin"), listUsers);
 
-// ✅ Get single user
+// Get single user
 adminUserRouter.get(
   "/details/:id",
   isAuthenticated,
@@ -21,7 +21,7 @@ adminUserRouter.get(
   getUserDetails,
 );
 
-// ✅ Delete user (ADMIN only)
+// Delete user (ADMIN only)
 adminUserRouter.delete(
   "/delete/:id",
   isAuthenticated,
@@ -29,7 +29,7 @@ adminUserRouter.delete(
   deleteUser,
 );
 
-// ✅ Ban / Unban (ADMIN only)
+// Ban / Unban (ADMIN only)
 adminUserRouter.post("/ban/:id", isAuthenticated, hasRole("admin"), banUser);
 
 adminUserRouter.post(

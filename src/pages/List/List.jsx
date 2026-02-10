@@ -121,7 +121,7 @@ export default function List() {
                       ₹{item.price}
                     </p>
 
-                    {/* ✅ QUANTITY */}
+                    {/* QUANTITY */}
                     <p className="text-xs mt-1 font-medium text-gray-600">
                       Quantity:{" "}
                       <span
@@ -192,7 +192,7 @@ export default function List() {
                     ₹{item.price}
                   </td>
 
-                  {/* ✅ QUANTITY */}
+                  {/* QUANTITY */}
                   <td
                     className={`px-4 py-3 text-center font-semibold ${
                       item.quantity === 0 ? "text-red-500" : "text-green-600"
@@ -267,7 +267,7 @@ export default function List() {
                   <span className="text-orange-600">₹{viewItem.price}</span>
                 </div>
 
-                {/* ✅ QUANTITY */}
+                {/* QUANTITY */}
                 <p
                   className={`text-sm font-semibold ${
                     viewItem.quantity === 0 ? "text-red-500" : "text-green-600"

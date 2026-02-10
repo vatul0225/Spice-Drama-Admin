@@ -75,11 +75,10 @@ router.post("/users", protect, adminOnly, async (req, res) => {
         .json({ error: "Username or Email already exists" });
     }
 
-    // ✅ DO NOT hash here (model will handle it)
     const user = await User.create({
       username,
       email,
-      password, // plain password
+      password,
       role,
       isActive: true,
     });

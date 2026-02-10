@@ -17,7 +17,7 @@ import "./index.css";
 const AppRoutes = () => {
   const { loading } = useAuth();
 
-  // ⏳ wait till auth check completes
+  // wait till auth check completes
   if (loading) {
     return (
       <div className="flex h-screen items-center justify-center text-lg">

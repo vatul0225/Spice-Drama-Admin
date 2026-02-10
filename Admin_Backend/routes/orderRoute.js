@@ -9,8 +9,6 @@ import {
 
 const orderRouter = express.Router();
 
-// ADMIN ROUTES - For admin panel to manage orders
-
 // List all orders - Any authenticated admin can view
 orderRouter.get("/list", isAuthenticated, listOrders);
 

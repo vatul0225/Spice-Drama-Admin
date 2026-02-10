@@ -1,22 +1,23 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useState, useContext, useEffect } from "react";
 import adminApi from "../services/adminApi";
 
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
-    const saved = localStorage.getItem("user");
+    const saved = localStorage.getItem("admin_user");
     return saved ? JSON.parse(saved) : null;
   });
 
   const [loading, setLoading] = useState(true);
 
-  /* ---------------- INIT ---------------- */
+  /* ---------------- INIT AUTH (JWT) ---------------- */
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    const savedUser = localStorage.getItem("user");
+    const token = localStorage.getItem("admin_token");
+    const savedUser = localStorage.getItem("admin_user");
 
     if (token && savedUser) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setUser(JSON.parse(savedUser));
     } else {
       setUser(null);
@@ -29,16 +30,18 @@ export const AuthProvider = ({ children }) => {
   const login = async (credentials) => {
     const res = await adminApi.post("/auth/login", credentials);
 
-    localStorage.setItem("token", res.data.token);
-    localStorage.setItem("user", JSON.stringify(res.data.user));
+    // SAVE JWT + USER
+    localStorage.setItem("admin_token", res.data.token);
+    localStorage.setItem("admin_user", JSON.stringify(res.data.user));
 
     setUser(res.data.user);
+    return res.data;
   };
 
   /* ---------------- LOGOUT ---------------- */
   const logout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    localStorage.removeItem("admin_token");
+    localStorage.removeItem("admin_user");
     setUser(null);
   };
 
@@ -49,8 +52,11 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => {
-  const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error("useAuth must be inside provider");
-  return ctx;
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth must be used within AuthProvider");
+  }
+  return context;
 };

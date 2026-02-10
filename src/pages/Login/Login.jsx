@@ -21,7 +21,7 @@ const Login = () => {
     setLoading(true);
 
     try {
-      await login(credentials); 
+      await login(credentials);
       navigate("/");
     } catch (err) {
       setError(err?.response?.data?.error || "Invalid credentials");

@@ -96,12 +96,10 @@ const AppRoutes = () => {
 
 const App = () => {
   return (
-    <BrowserRouter>
-      <AuthProvider>
-        <ToastContainer position="top-right" autoClose={3000} />
-        <AppRoutes />
-      </AuthProvider>
-    </BrowserRouter>
+    <AuthProvider>
+      <ToastContainer position="top-right" autoClose={3000} />
+      <AppRoutes />
+    </AuthProvider>
   );
 };
 
